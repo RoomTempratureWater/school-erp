@@ -1,0 +1,249 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  LEFT
+}
+
+enum StaffRole {
+  TEACHING
+  NON_TEACHING
+}
+
+enum FeeStatus {
+  PENDING
+  PARTIAL
+  PAID
+}
+
+enum CertificateType {
+  BONAFIDE
+  LEAVING
+}
+
+enum PaymentMethod {
+  CASH
+  UPI
+  CHEQUE
+  BANK_TRANSFER
+}
+
+// ==========================================
+// CORE ENTITIES
+// ==========================================
+
+model Student {
+  id             Int           @id @default(autoincrement())
+  enrollmentNo   String        @unique
+  firstName      String
+  lastName       String
+  dateOfBirth    DateTime
+  standard       String
+  division       String
+  status         StudentStatus @default(ACTIVE)
+  parentName     String?
+  contactNumber  String?
+  profilePicture String?       // MinIO object key
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  fees         StudentFee[]
+  certificates Certificate[]
+  marks        Mark[]
+  documents    StudentDocument[]
+  promotions   StudentPromotion[]
+
+  @@map("students")
+}
+
+model StudentDocument {
+  id         Int      @id @default(autoincrement())
+  studentId  Int
+  fileName   String
+  objectKey  String   // MinIO object key
+  mimeType   String?
+  fileSize   Int?     // bytes
+  createdAt  DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("student_documents")
+}
+
+model Staff {
+  id            Int       @id @default(autoincrement())
+  employeeId    String    @unique
+  firstName     String
+  lastName      String
+  role          StaffRole
+  documentsPath Json? // Array of paths in Minio
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("staff")
+}
+
+// ==========================================
+// FEE MANAGEMENT
+// ==========================================
+
+model AcademicYear {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // e.g. "2025-26"
+  isCurrent Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  feeCategories FeeCategory[]
+  exams         Exam[]
+  promotions    StudentPromotion[]
+
+  @@map("academic_years")
+}
+
+model FeeCategory {
+  id             Int          @id @default(autoincrement())
+  name           String       // E.g. "Tuition Fee", "Bus Fee"
+  amount         Float
+  academicYearId Int
+  standard       String?      // Optional: if null, applies to all
+  createdAt      DateTime     @default(now())
+
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  studentFees    StudentFee[]
+
+  @@map("fee_categories")
+}
+
+model StudentFee {
+  id              Int       @id @default(autoincrement())
+  studentId       Int
+  feeCategoryId   Int
+  amountDue       Float
+  amountPaid      Float     @default(0.0)
+  status          FeeStatus @default(PENDING)
+  studentStandard String?
+  studentDivision String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  student      Student              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feeCategory  FeeCategory          @relation(fields: [feeCategoryId], references: [id])
+  transactions PaymentTransaction[]
+
+  @@map("student_fees")
+}
+
+model PaymentTransaction {
+  id            Int           @id @default(autoincrement())
+  studentFeeId  Int
+  amount        Float
+  paymentMethod PaymentMethod @default(CASH)
+  reference     String?       // "Installment I", UTR no, etc
+  paymentDate   DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+
+  studentFee StudentFee @relation(fields: [studentFeeId], references: [id], onDelete: Cascade)
+
+  @@map("payment_transactions")
+}
+
+// ==========================================
+// ADMISSION & RECORDS (CERTIFICATES)
+// ==========================================
+
+model Certificate {
+  id        Int             @id @default(autoincrement())
+  studentId Int
+  type      CertificateType
+  issuedAt  DateTime        @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("certificates")
+}
+
+// ==========================================
+// EXAMINATION SYSTEM
+// ==========================================
+
+model Exam {
+  id             Int          @id @default(autoincrement())
+  name           String       // E.g. "Mid Term", "Finals"
+  academicYearId Int
+  examDate       DateTime?
+  standard       String
+  subjects       Json         // e.g. [{ "name": "Maths", "maxMarks": 100 }]
+  createdAt      DateTime     @default(now())
+
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  marks          Mark[]
+
+  @@map("exams")
+}
+
+model Mark {
+  id            Int      @id @default(autoincrement())
+  examId        Int
+  studentId     Int
+  subject       String
+  marksObtained Float
+  maxMarks      Float
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  exam    Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, studentId, subject])
+  @@map("marks")
+}
+
+// ==========================================
+// AUDIT LOGS
+// ==========================================
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  tableName   String   @map("table_name")
+  action      String
+  changedData Json?    @map("changed_data")
+  createdBy   String?  @map("created_by")
+  timestamp   DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+// ==========================================
+// STUDENT PROMOTIONS
+// ==========================================
+
+model StudentPromotion {
+  id             Int          @id @default(autoincrement())
+  studentId      Int
+  academicYearId Int
+  fromStandard   String
+  fromDivision   String
+  toStandard     String
+  toDivision     String
+  promotedAt     DateTime     @default(now())
+  remarks        String?      // e.g. "Promoted", "Retained", "Section change"
+
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id])
+
+  @@map("student_promotions")
+}
