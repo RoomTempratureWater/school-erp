@@ -57,7 +57,7 @@ model Student {
   status         StudentStatus @default(ACTIVE)
   parentName     String?
   contactNumber  String?
-  profilePicture String?       // MinIO object key
+  profilePicture String? // MinIO object key
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -71,13 +71,13 @@ model Student {
 }
 
 model StudentDocument {
-  id         Int      @id @default(autoincrement())
-  studentId  Int
-  fileName   String
-  objectKey  String   // MinIO object key
-  mimeType   String?
-  fileSize   Int?     // bytes
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  fileName  String
+  objectKey String // MinIO object key
+  mimeType  String?
+  fileSize  Int? // bytes
+  createdAt DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -85,16 +85,38 @@ model StudentDocument {
 }
 
 model Staff {
-  id            Int       @id @default(autoincrement())
-  employeeId    String    @unique
-  firstName     String
-  lastName      String
-  role          StaffRole
-  documentsPath Json? // Array of paths in Minio
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id             Int       @id @default(autoincrement())
+  employeeId     String    @unique
+  firstName      String
+  lastName       String
+  role           StaffRole
+  address        String?
+  phone          String?
+  profilePicture String? // MinIO object key
+  jobDescription String?
+  dosAndDonts    String?
+  achievements   String?
+  documentsPath  Json? // Array of paths in Minio
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  documents StaffDocument[]
 
   @@map("staff")
+}
+
+model StaffDocument {
+  id        Int      @id @default(autoincrement())
+  staffId   Int
+  fileName  String
+  objectKey String // MinIO object key
+  mimeType  String?
+  fileSize  Int? // bytes
+  createdAt DateTime @default(now())
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@map("staff_documents")
 }
 
 // ==========================================
@@ -115,15 +137,15 @@ model AcademicYear {
 }
 
 model FeeCategory {
-  id             Int          @id @default(autoincrement())
-  name           String       // E.g. "Tuition Fee", "Bus Fee"
+  id             Int      @id @default(autoincrement())
+  name           String // E.g. "Tuition Fee", "Bus Fee"
   amount         Float
   academicYearId Int
-  standard       String?      // Optional: if null, applies to all
-  createdAt      DateTime     @default(now())
+  standard       String? // Optional: if null, applies to all
+  createdAt      DateTime @default(now())
 
-  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
-  studentFees    StudentFee[]
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id])
+  studentFees  StudentFee[]
 
   @@map("fee_categories")
 }
@@ -152,7 +174,7 @@ model PaymentTransaction {
   studentFeeId  Int
   amount        Float
   paymentMethod PaymentMethod @default(CASH)
-  reference     String?       // "Installment I", UTR no, etc
+  reference     String? // "Installment I", UTR no, etc
   paymentDate   DateTime      @default(now())
   createdAt     DateTime      @default(now())
 
@@ -181,16 +203,16 @@ model Certificate {
 // ==========================================
 
 model Exam {
-  id             Int          @id @default(autoincrement())
-  name           String       // E.g. "Mid Term", "Finals"
+  id             Int       @id @default(autoincrement())
+  name           String // E.g. "Mid Term", "Finals"
   academicYearId Int
   examDate       DateTime?
   standard       String
-  subjects       Json         // e.g. [{ "name": "Maths", "maxMarks": 100 }]
-  createdAt      DateTime     @default(now())
+  subjects       Json // e.g. [{ "name": "Maths", "maxMarks": 100 }]
+  createdAt      DateTime  @default(now())
 
-  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
-  marks          Mark[]
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id])
+  marks        Mark[]
 
   @@map("exams")
 }
@@ -232,15 +254,15 @@ model AuditLog {
 // ==========================================
 
 model StudentPromotion {
-  id             Int          @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   studentId      Int
   academicYearId Int
   fromStandard   String
   fromDivision   String
   toStandard     String
   toDivision     String
-  promotedAt     DateTime     @default(now())
-  remarks        String?      // e.g. "Promoted", "Retained", "Section change"
+  promotedAt     DateTime @default(now())
+  remarks        String? // e.g. "Promoted", "Retained", "Section change"
 
   student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
   academicYear AcademicYear @relation(fields: [academicYearId], references: [id])
