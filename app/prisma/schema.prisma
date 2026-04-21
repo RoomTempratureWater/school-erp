@@ -85,16 +85,38 @@ model StudentDocument {
 }
 
 model Staff {
-  id            Int       @id @default(autoincrement())
-  employeeId    String    @unique
-  firstName     String
-  lastName      String
-  role          StaffRole
-  documentsPath Json? // Array of paths in Minio
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id             Int       @id @default(autoincrement())
+  employeeId     String    @unique
+  firstName      String
+  lastName       String
+  role           StaffRole
+  address        String
+  phone          String
+  profilePicture String?
+  jobDescription String?
+  dosAndDonts    String?
+  achievements   String?
+  documentsPath  Json? // Deprecated, use StaffDocument
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  documents StaffDocument[]
 
   @@map("staff")
+}
+
+model StaffDocument {
+  id         Int      @id @default(autoincrement())
+  staffId    Int
+  fileName   String
+  objectKey  String   // MinIO object key
+  mimeType   String?
+  fileSize   Int?     // bytes
+  createdAt  DateTime @default(now())
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@map("staff_documents")
 }
 
 // ==========================================
