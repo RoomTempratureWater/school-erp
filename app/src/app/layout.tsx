@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
 import './globals.css';
+import Link from 'next/link';
 
 const manrope = Manrope({
   variable: '--font-sans',
@@ -19,28 +20,74 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${manrope.variable} font-sans h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
-        <header className="flex h-16 shrink-0 items-center justify-between border-b px-6 bg-white sticky top-0 z-50 print:hidden">
-          <div className="flex items-center gap-2 font-semibold text-lg tracking-tight">
-             <div className="size-8 rounded-md bg-primary text-primary-foreground flex flex-col items-center justify-center font-bold">E</div>
-             <span>EduManage ERP</span>
+      <body className="h-full flex overflow-hidden bg-monolith-bg text-slate-800">
+        {/* BEGIN: Left Sidebar */}
+        <aside className="hidden lg:flex w-64 bg-white m-4 mr-0 rounded-2xl border border-slate-200 flex-col shrink-0 shadow-sm overflow-hidden text-slate-700">
+          <div className="p-6">
+            <h1 className="text-xl font-bold tracking-widest uppercase text-monolith-navy">Monolith</h1>
+            <h2 className="text-xs font-semibold tracking-[0.2em] text-slate-500 mt-1 uppercase">Academy</h2>
+            <p className="text-[10px] text-slate-400 mt-4 font-bold tracking-widest uppercase">Registry Office</p>
           </div>
-          <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground shrink-0">
-            <nav className="hidden md:flex gap-6 items-center">
-              <a href="#" className="text-foreground transition-colors hover:text-foreground">Dashboard</a>
-              <a href="/school-year-setup" className="transition-colors hover:text-foreground">School Setup</a>
-              <a href="/fees" className="transition-colors hover:text-foreground">Fees</a>
-              <a href="/promote-students" className="transition-colors hover:text-foreground">Promotions</a>
-              <a href="/exam-setup" className="transition-colors hover:text-foreground">Exam Setup</a>
-              <a href="/exam-results" className="transition-colors hover:text-foreground">Exam Results</a>
-            </nav>
-            <div className="size-8 rounded-full bg-muted flex items-center justify-center border font-semibold text-foreground ml-4 shrink-0">
-              AD
+          <nav className="flex-1 px-4 mt-4 space-y-1">
+            <Link href="/" className="flex items-center gap-3 px-4 py-3 bg-slate-50 text-monolith-navy font-semibold rounded-md transition hover:bg-slate-100">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+              <span className="text-sm font-medium">Dashboard</span>
+            </Link>
+            <Link href="/promote-students" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition rounded-md">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+              <span className="text-sm">Promotions</span>
+            </Link>
+            <Link href="/students" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition rounded-md">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              <span className="text-sm">Student Profile</span>
+            </Link>
+            <Link href="/fees" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition rounded-md">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+              <span className="text-sm">Fees</span>
+            </Link>
+            <Link href="/admission" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition rounded-md">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              <span className="text-sm">Admission</span>
+            </Link>
+            <Link href="/school-year-setup" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition rounded-md">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+              <span className="text-sm">School Year Setup</span>
+            </Link>
+            <Link href="/staff" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition rounded-md">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+              <span className="text-sm">Staff</span>
+            </Link>
+            <Link href="/exam-setup" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition rounded-md">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+              <span className="text-sm">Exams</span>
+            </Link>
+            <Link href="/exam-results" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition rounded-md">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              <span className="text-sm">Result</span>
+            </Link>
+          </nav>
+          <div className="p-4 border-t border-slate-100 flex flex-col gap-4">
+            <Link href="/settings" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition rounded-md">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              <span className="text-sm">Settings</span>
+            </Link>
+            
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt="Profile" className="w-10 h-10 rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHzrhg8yfKnGJzVNqZXS5dgTqeczDnewX7ZoHKzdU3AKzHqr6ZWOa21-HtGbB4Xq1ZdQb9Uc9a2Um1CSZSZJLJfOjwmw3QNkGHQ2Kg1yuSk5DX_ZTcYRjcKUHZaw0G9QFsbWdU4Tr97AZrYcW9cgv6hctdQUNHTe-jDN0viY9Xbe4YpGqvuKRjAXfTccQjH7NIj6Qe3zH1bc0brzGZg0ujg7IO5L0YPeod96RmoloVdFECxYOaQvOXxsUVbKMIiiDt0qTFtecd7z8"/>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold leading-tight text-slate-800 truncate">Dr. Alistair Vance</p>
+                <p className="text-[10px] text-slate-500 truncate">Dean of Registry</p>
+              </div>
             </div>
           </div>
-        </header>
-        <div className="flex flex-1 overflow-hidden">
-           {children}
+        </aside>
+
+        {/* BEGIN: Main Content Area */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex flex-1 overflow-hidden">
+            {children}
+          </div>
         </div>
       </body>
     </html>

@@ -46,6 +46,15 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-monolith-navy: var(--monolith-navy);
+  --color-monolith-sidebar-hover: var(--monolith-sidebar-hover);
+  --color-monolith-accent-blue: var(--monolith-accent-blue);
+  --color-monolith-bg: var(--monolith-bg);
+  --color-monolith-success: var(--monolith-success);
+  --color-monolith-orange: var(--monolith-orange);
+  --color-monolith-teal: var(--monolith-teal);
+  --color-monolith-salmon: var(--monolith-salmon);
+  --color-monolith-purple: var(--monolith-purple);
 }
 
 :root {
@@ -82,6 +91,17 @@
   --sidebar-accent-foreground: oklch(0.2 0 0);
   --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.55 0.15 250);
+
+  /* Monolith Custom Palette */
+  --monolith-navy: #00003c;
+  --monolith-sidebar-hover: #00005a;
+  --monolith-accent-blue: #6366f1;
+  --monolith-bg: #f3f4f6;
+  --monolith-success: #10b981;
+  --monolith-orange: #f59e0b;
+  --monolith-teal: #14b8a6;
+  --monolith-salmon: #f87171;
+  --monolith-purple: #8b5cf6;
 }
 
 @layer base {
