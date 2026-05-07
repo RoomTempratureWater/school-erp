@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import AutoPrint from '@/components/AutoPrint';
 
 export default async function PrintFeeReceipt(
   props: { params: Promise<{ id: string }>, searchParams: Promise<{ tx?: string }> }
@@ -212,9 +213,7 @@ export default async function PrintFeeReceipt(
           </div>
       </div>
       {/* Auto-Trigger Print Dialog */}
-      <script dangerouslySetInnerHTML={{
-        __html: `window.onload = function() { window.print(); }`
-      }} />
+      <AutoPrint />
     </>
   );
 }
