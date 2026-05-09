@@ -4,17 +4,18 @@ services:
       context: ./app
       dockerfile: Dockerfile
     restart: unless-stopped
-    # App port is NOT exposed to the host to enforce Zero Trust.
-    # Cloudflared will route traffic internally to port 3000.
+    # App port is NOT exposed to the host.
+    # Cloudflared will route traffic internally directly to port 3000.
     
-    # Use env_file to guarantee Prisma gets the database credentials on startup
+    # Injects the app-specific variables (like DATABASE_URL) directly into the container
     env_file:
       - ./app/.env 
+      
     networks:
       - school_network
     depends_on:
       db:
-        # Wait for Postgres to be fully ready before starting Next.js/Prisma
+        # Forces the app to wait until Postgres is fully initialized before booting
         condition: service_healthy
       minio:
         condition: service_started
@@ -22,8 +23,8 @@ services:
   db:
     image: postgres:16-alpine
     restart: unless-stopped
-    # Bind to localhost only (127.0.0.1:5432) so you can still access it 
-    # from the host machine for maintenance, but it's hidden from the outside network.
+    # Bound to localhost (127.0.0.1) to prevent external local-network access,
+    # keeping the database accessible only to the server admin and Docker containers.
     ports:
       - "127.0.0.1:5432:5432"
     environment:
@@ -35,7 +36,7 @@ services:
       - ./db/init:/docker-entrypoint-initdb.d
     networks:
       - school_network
-    # Healthcheck ensures the DB is accepting connections before Prisma runs
+    # Healthcheck ensures the DB is accepting connections before Next.js/Prisma boots up
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 5s
@@ -49,7 +50,6 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    # Consider removing these ports later if Cloudflare tunnels are routing to Minio directly
     ports:
       - "127.0.0.1:${MINIO_PORT:-9000}:9000"
       - "127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001"
