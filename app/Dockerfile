@@ -8,7 +8,7 @@ RUN npm ci
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Copy dependencies and all source code (including your .env file)
+# Copy dependencies and source code
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -24,24 +24,20 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
+# THE FIX: Install the Prisma CLI directly into the final image.
+# This runs on your machine during the build, meaning the executable is 
+# baked in and requires NO internet access when deployed to the offline server.
+RUN npm install prisma
+
 # Standalone Next.js output
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# Prisma files required at runtime
+# Copy your Prisma schema folder (required to know WHAT to migrate)
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-
-# FIX 1: Copy the Prisma CLI so 'npx prisma' doesn't download it on every container startup
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-
-# FIX 2: Copy the .env file into the final container so Prisma can read your DATABASE_URL
-# Note: If you ever deploy this image to the public, be careful, as baking secrets into the image isn't recommended for strict production environments.
-COPY --from=builder /app/.env ./.env
 
 EXPOSE 3000
 
-# Apply migrations safely before app startup
+# The container now has 'prisma' installed locally, so npx will find it instantly
 CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
