@@ -26,7 +26,7 @@ export default function RootLayout({
           <div className="p-6">
             <h1 className="text-xl font-bold tracking-widest uppercase text-monolith-navy">Monolith</h1>
             <h2 className="text-xs font-semibold tracking-[0.2em] text-slate-500 mt-1 uppercase">Academy</h2>
-            <p className="text-[10px] text-slate-400 mt-4 font-bold tracking-widest uppercase">Registry Office</p>
+            <p className="text-[10px] text-slate-400 mt-4 font-bold tracking-widest uppercase">Registry Office test</p>
           </div>
           <nav className="flex-1 px-4 mt-4 space-y-1">
             <Link href="/" className="flex items-center gap-3 px-4 py-3 bg-slate-50 text-monolith-navy font-semibold rounded-md transition hover:bg-slate-100">
