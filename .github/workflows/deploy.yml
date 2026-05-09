@@ -3,17 +3,21 @@ name: Deploy School ERP
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   deploy:
-    runs-on: self-hosted  
+    runs-on: self-hosted
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Copy Environment Variables
-        run: cp ~/.env ./.env || echo ".env already exists or handled manually"
+      - name: Inject Environment Variables
+        run: |
+          # Create the app directory if it doesn't exist (it should, but just in case)
+          mkdir -p app
+          # Copy the master env from your home directory into the app folder
+          cp ~/configs/school-erp.env ./app/.env
 
       - name: Build and Restart Containers
         run: docker compose up -d --build --remove-orphans
