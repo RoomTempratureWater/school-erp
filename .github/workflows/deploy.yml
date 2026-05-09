@@ -1,0 +1,22 @@
+name: Deploy School ERP
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  deploy:
+    runs-on: self-hosted  
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Copy Environment Variables
+        run: cp ~/.env ./.env || echo ".env already exists or handled manually"
+
+      - name: Build and Restart Containers
+        run: docker compose up -d --build --remove-orphans
+
+      - name: Prune Old Images
+        run: docker image prune -f
