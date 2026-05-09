@@ -10,7 +10,7 @@ services:
     # Injects the app-specific variables (like DATABASE_URL) directly into the container
     env_file:
       - ./app/.env 
-      
+    command: sleep infinity  
     networks:
       - school_network
     depends_on:
