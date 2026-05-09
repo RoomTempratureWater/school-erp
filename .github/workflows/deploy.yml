@@ -17,7 +17,7 @@ jobs:
           # Create the app directory if it doesn't exist (it should, but just in case)
           mkdir -p app
           # Copy the master env from your home directory into the app folder
-          cp ~/configs/school-erp.env ./app/.env
+          cp /home/deploy/configs/school-erp.env ./app/.env
 
       - name: Build and Restart Containers
         run: docker compose up -d --build --remove-orphans
