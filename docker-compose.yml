@@ -4,8 +4,10 @@ services:
       context: ./app
       dockerfile: Dockerfile
     restart: unless-stopped
-    # App port is NOT exposed to the host.
-    # Cloudflared will route traffic internally directly to port 3000.
+    # Bound exclusively to your Tailscale IP. 
+    # Only devices authenticated on your Tailscale network can see the ERP on port 3000.
+    ports:
+      - "${TAILSCALE_PORT}:3000:3000"
     
     # Injects the app-specific variables (like DATABASE_URL) directly into the container
     env_file:
@@ -22,10 +24,10 @@ services:
   db:
     image: postgres:16-alpine
     restart: unless-stopped
-    # Bound to localhost (127.0.0.1) to prevent external local-network access,
-    # keeping the database accessible only to the server admin and Docker containers.
+    # Bound to Tailscale IP. You can now securely connect your local 
+    # pgAdmin/DBeaver directly to the production database over the VPN!
     ports:
-      - "127.0.0.1:5432:5432"
+      - "${TAILSCALE_PORT}:5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -49,24 +51,14 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    # Bound to Tailscale IP so you can securely access the Minio web console
     ports:
-      - "127.0.0.1:${MINIO_PORT:-9000}:9000"
-      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001"
+      - "${TAILSCALE_PORT}:${MINIO_PORT:-9000}:9000"
+      - "${TAILSCALE_PORT}:${MINIO_CONSOLE_PORT:-9001}:9001"
     volumes:
       - ./volumes/miniodata:/data
     networks:
       - school_network
-
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    restart: unless-stopped
-    command: tunnel --no-autoupdate run
-    environment:
-      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}
-    networks:
-      - school_network
-    depends_on:
-      - app
 
 networks:
   school_network:
