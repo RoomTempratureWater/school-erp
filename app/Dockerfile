@@ -24,7 +24,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# THE FIX: Install the Prisma CLI directly into the final image.
+# Install the Prisma CLI directly into the final image.
 # This runs on your machine during the build, meaning the executable is 
 # baked in and requires NO internet access when deployed to the offline server.
 RUN npm install prisma
@@ -36,6 +36,9 @@ COPY --from=builder /app/.next/static ./.next/static
 
 # Copy your Prisma schema folder (required to know WHAT to migrate)
 COPY --from=builder /app/prisma ./prisma
+
+# THE PRISMA 7 FIX: Copy the config file so the runner knows where the database is!
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 3000
 
