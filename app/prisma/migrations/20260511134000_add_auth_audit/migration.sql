@@ -1,18 +1,30 @@
-CREATE TABLE IF NOT EXISTS audit_logs (
-    id SERIAL PRIMARY KEY,
-    table_name TEXT NOT NULL,
-    action TEXT NOT NULL,
-    changed_data JSONB,
-    internal_user_id INT,
-    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+-- AlterTable
+ALTER TABLE "audit_logs" DROP COLUMN "created_by",
+ADD COLUMN     "internal_user_id" INTEGER;
+
+-- CreateTable
+CREATE TABLE "internal_users" (
+    "id" SERIAL NOT NULL,
+    "userid" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "internal_users_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateIndex
+CREATE UNIQUE INDEX "internal_users_userid_key" ON "internal_users"("userid");
+
+-- AddForeignKey
+ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_internal_user_id_fkey" FOREIGN KEY ("internal_user_id") REFERENCES "internal_users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- Update the audit log trigger to use the new column
 CREATE OR REPLACE FUNCTION process_audit_log()
 RETURNS TRIGGER AS $$
 DECLARE
     internal_user_id_val INT;
 BEGIN
-    -- Extract user identity from local session variable
     BEGIN
         internal_user_id_val := current_setting('school_app.internal_user_id', true)::INT;
     EXCEPTION WHEN OTHERS THEN
@@ -35,8 +47,3 @@ BEGIN
     RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
-
--- Usage Example:
--- CREATE TRIGGER users_audit_trigger
--- AFTER INSERT OR UPDATE OR DELETE ON public.users
--- FOR EACH ROW EXECUTE FUNCTION process_audit_log();

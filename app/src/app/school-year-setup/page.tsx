@@ -3,8 +3,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { createAcademicYear, createFeeCategory } from "./actions";
+import { createAcademicYear, createFeeCategory, deleteFeeCategory } from "./actions";
 import Link from "next/link";
+import DeleteWithDoubleConfirm from "@/components/DeleteWithDoubleConfirm";
 
 export default async function SchoolYearSetupPage(props: { searchParams: Promise<{ [key: string]: string | undefined }> }) {
   const searchParams = await props.searchParams;
@@ -143,12 +144,13 @@ export default async function SchoolYearSetupPage(props: { searchParams: Promise
                            <TableHead>Name</TableHead>
                            <TableHead>Year</TableHead>
                            <TableHead className="text-right">Amount</TableHead>
+                           <TableHead className="text-right">Action</TableHead>
                          </TableRow>
                        </TableHeader>
                        <TableBody>
                          {feeCategories.length === 0 ? (
                            <TableRow>
-                             <TableCell colSpan={3} className="text-center py-6 text-muted-foreground text-sm">No fee templates found for this year.</TableCell>
+                             <TableCell colSpan={4} className="text-center py-6 text-muted-foreground text-sm">No fee templates found for this year.</TableCell>
                            </TableRow>
                          ) : (
                            feeCategories.map(fc => (
@@ -160,6 +162,9 @@ export default async function SchoolYearSetupPage(props: { searchParams: Promise
                                  </span>
                                </TableCell>
                                <TableCell className="text-right font-semibold">{fc.amount.toLocaleString()}</TableCell>
+                               <TableCell className="text-right">
+                                  <DeleteWithDoubleConfirm id={fc.id} action={deleteFeeCategory} itemDescription="Fee Template" />
+                               </TableCell>
                              </TableRow>
                            ))
                          )}
