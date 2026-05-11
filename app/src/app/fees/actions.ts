@@ -105,3 +105,53 @@ export async function filterDues(formData: FormData) {
   
   return params.toString();
 }
+
+export async function deleteStudentFee(id: number) {
+  try {
+    await prisma.studentFee.delete({
+      where: { id }
+    });
+    revalidatePath("/fees");
+    return { success: true };
+  } catch (error: any) {
+    if (error.code === 'P2003') {
+      return { success: false, error: "Cannot delete: This fee already has recorded payment transactions." };
+    }
+    return { success: false, error: "An unexpected error occurred while deleting." };
+  }
+}
+
+export async function deletePaymentTransaction(id: number) {
+  try {
+    // We need to do this in a transaction to ensure ledger consistency
+    await prisma.$transaction(async (tx: any) => {
+      const transaction = await tx.paymentTransaction.findUnique({
+        where: { id },
+        include: { studentFee: true }
+      });
+
+      if (!transaction) throw new Error("Transaction not found");
+
+      const fee = transaction.studentFee;
+      const newPaid = fee.amountPaid - transaction.amount;
+      const newStatus = newPaid <= 0 ? "PENDING" : (newPaid < fee.amountDue ? "PARTIAL" : "PAID");
+
+      await tx.studentFee.update({
+        where: { id: fee.id },
+        data: {
+          amountPaid: Math.max(0, newPaid),
+          status: newStatus
+        }
+      });
+
+      await tx.paymentTransaction.delete({
+        where: { id }
+      });
+    });
+    
+    revalidatePath("/fees");
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Failed to delete transaction." };
+  }
+}

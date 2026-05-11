@@ -36,3 +36,19 @@ export async function createFeeCategory(formData: FormData) {
   revalidatePath("/school-year-setup");
   revalidatePath("/fees");
 }
+
+export async function deleteFeeCategory(id: number) {
+  try {
+    await prisma.feeCategory.delete({
+      where: { id }
+    });
+    revalidatePath("/school-year-setup");
+    revalidatePath("/fees");
+    return { success: true };
+  } catch (error: any) {
+    if (error.code === 'P2003') {
+      return { success: false, error: "Cannot delete: Students are already assigned this fee." };
+    }
+    return { success: false, error: "An unexpected error occurred while deleting." };
+  }
+}

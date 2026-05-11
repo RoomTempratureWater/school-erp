@@ -16,9 +16,10 @@ interface Log {
   level: LogLevel;
   service: string;
   message: string;
-  duration: string;
+  userId: string;
   status: string;
   tags: string[];
+  changedData: string;
 }
 
 type Filters = {
@@ -27,82 +28,10 @@ type Filters = {
   status: string[];
 };
 
-const SAMPLE_LOGS: Log[] = [
-  {
-    id: "1",
-    timestamp: "2024-11-08T14:32:45Z",
-    level: "info",
-    service: "api-gateway",
-    message: "Request processed successfully",
-    duration: "245ms",
-    status: "200",
-    tags: ["api", "success"],
-  },
-  {
-    id: "2",
-    timestamp: "2024-11-08T14:32:42Z",
-    level: "warning",
-    service: "cache-service",
-    message: "Cache miss ratio exceeds threshold",
-    duration: "1.2s",
-    status: "warning",
-    tags: ["cache", "performance"],
-  },
-  {
-    id: "3",
-    timestamp: "2024-11-08T14:32:40Z",
-    level: "error",
-    service: "database",
-    message: "Connection timeout to replica",
-    duration: "5.1s",
-    status: "503",
-    tags: ["db", "error"],
-  },
-  {
-    id: "4",
-    timestamp: "2024-11-08T14:32:38Z",
-    level: "info",
-    service: "auth-service",
-    message: "User session created",
-    duration: "156ms",
-    status: "201",
-    tags: ["auth", "session"],
-  },
-  {
-    id: "5",
-    timestamp: "2024-11-08T14:32:35Z",
-    level: "info",
-    service: "api-gateway",
-    message: "Webhook delivered",
-    duration: "432ms",
-    status: "200",
-    tags: ["webhook", "integration"],
-  },
-  {
-    id: "6",
-    timestamp: "2024-11-08T14:32:32Z",
-    level: "error",
-    service: "payment-service",
-    message: "Payment gateway unavailable",
-    duration: "2.3s",
-    status: "502",
-    tags: ["payment", "error"],
-  },
-];
-
-const levelStyles: Record<LogLevel, string> = {
+const levelStyles: Record<string, string> = {
   info: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
   warning: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
   error: "bg-red-500/10 text-red-600 dark:text-red-400",
-};
-
-const statusStyles: Record<string, string> = {
-  "200": "text-green-600 dark:text-green-400",
-  "201": "text-green-600 dark:text-green-400",
-  "429": "text-yellow-600 dark:text-yellow-400",
-  "502": "text-red-600 dark:text-red-400",
-  "503": "text-red-600 dark:text-red-400",
-  warning: "text-yellow-600 dark:text-yellow-400",
 };
 
 function LogRow({
@@ -138,7 +67,7 @@ function LogRow({
 
           <Badge
             variant="secondary"
-            className={`flex-shrink-0 capitalize ${levelStyles[log.level]}`}
+            className={`flex-shrink-0 capitalize ${levelStyles[log.level] || levelStyles.info}`}
           >
             {log.level}
           </Badge>
@@ -168,29 +97,31 @@ function LogRow({
             className="overflow-hidden border-t border-border bg-muted/50"
           >
             <div className="space-y-4 p-4 text-xs">
-              <div>
-                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Message
-                </p>
-                <p className="rounded bg-background p-3 font-mono text-sm text-foreground">
-                  {log.message}
-                </p>
-              </div>
-
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Duration
+                    User ID
                   </p>
-                  <p className="font-mono text-foreground">{log.duration}</p>
+                  <p className="font-mono text-foreground font-bold">{log.userId}</p>
                 </div>
                 <div>
                   <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                     Timestamp
                   </p>
                   <p className="font-mono text-xs text-foreground">
-                    {log.timestamp}
+                    {new Date(log.timestamp).toLocaleString()}
                   </p>
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Record Details (JSON)
+                </p>
+                <div className="max-h-48 overflow-y-auto rounded border border-slate-200 bg-background p-3">
+                  <pre className="font-mono text-[11px] text-foreground whitespace-pre-wrap break-all">
+                    {log.changedData}
+                  </pre>
                 </div>
               </div>
             </div>
@@ -290,7 +221,7 @@ function FilterPanel({
 
       <div className="space-y-3">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Service
+          Service (Table)
         </p>
         <div className="space-y-2">
           {services.map((service) => {
@@ -320,23 +251,26 @@ function FilterPanel({
   );
 }
 
-export function InteractiveLogsTable() {
+export function InteractiveLogsTable({ initialLogs }: { initialLogs: Log[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Default to only show "error" level logs (which represent DELETE actions in our mapping)
   const [filters, setFilters] = useState<Filters>({
-    level: [],
+    level: ["error"], // 'error' is mapped to DELETE
     service: [],
     status: [],
   });
 
   const filteredLogs = useMemo(() => {
-    return SAMPLE_LOGS.filter((log) => {
+    return initialLogs.filter((log) => {
       const lowerQuery = searchQuery.toLowerCase();
 
       const matchSearch =
         log.message.toLowerCase().includes(lowerQuery) ||
-        log.service.toLowerCase().includes(lowerQuery);
+        log.service.toLowerCase().includes(lowerQuery) ||
+        log.userId.toLowerCase().includes(lowerQuery);
 
       const matchLevel =
         filters.level.length === 0 || filters.level.includes(log.level);
@@ -345,7 +279,7 @@ export function InteractiveLogsTable() {
 
       return matchSearch && matchLevel && matchService;
     });
-  }, [filters, searchQuery]);
+  }, [initialLogs, filters, searchQuery]);
 
   const activeFilters =
     filters.level.length + filters.service.length + filters.status.length;
@@ -358,7 +292,7 @@ export function InteractiveLogsTable() {
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search..."
+                placeholder="Search logs by action, table, or user ID..."
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 className="h-9 pl-9 text-sm"
@@ -395,7 +329,7 @@ export function InteractiveLogsTable() {
               <FilterPanel
                 filters={filters}
                 onChange={setFilters}
-                logs={SAMPLE_LOGS}
+                logs={initialLogs}
               />
             </motion.div>
           )}

@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { processPayment, filterFees, filterDues } from "./actions";
+import { processPayment, filterFees, filterDues, deleteStudentFee, deletePaymentTransaction } from "./actions";
+import DeleteWithDoubleConfirm from "@/components/DeleteWithDoubleConfirm";
 
 function getDefaultDateFrom(): string {
   const d = new Date();
@@ -303,7 +304,7 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
                            <TableHead>Method</TableHead>
                            <TableHead>Reference</TableHead>
                            <TableHead className="text-right">Amount (INR)</TableHead>
-                           <TableHead className="text-center">Receipt</TableHead>
+                           <TableHead className="text-center">Action</TableHead>
                          </TableRow>
                        </TableHeader>
                        <TableBody>
@@ -335,9 +336,12 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
                                <TableCell className="text-sm text-muted-foreground">{t.reference || '—'}</TableCell>
                                <TableCell className="text-right font-bold text-green-700">{t.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</TableCell>
                                <TableCell className="text-center">
-                                  <Link href={`/print/receipt/${t.studentFee.student.id}?tx=${t.id}`} target="_blank">
-                                    <Button variant="ghost" size="sm" className="h-7 text-xs text-primary hover:text-primary hover:bg-primary/10">Print</Button>
-                                  </Link>
+                                  <div className="flex items-center justify-center gap-1">
+                                    <Link href={`/print/receipt/${t.studentFee.student.id}?tx=${t.id}`} target="_blank">
+                                      <Button variant="ghost" size="sm" className="h-7 text-xs text-primary hover:text-primary hover:bg-primary/10">Print</Button>
+                                    </Link>
+                                    <DeleteWithDoubleConfirm id={t.id} action={deletePaymentTransaction} itemDescription="Payment" />
+                                  </div>
                                </TableCell>
                              </TableRow>
                            ))
@@ -422,9 +426,12 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
                                </TableCell>
                                <TableCell className="text-right font-bold text-red-600">{pb.pending.toLocaleString(undefined, {minimumFractionDigits: 2})}</TableCell>
                                <TableCell className="text-center">
-                                  <Link href={`/print/dues/${pb.student.id}?feeId=${pb.fee.id}`} target="_blank">
-                                    <Button variant="ghost" size="sm" className="h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-100">Print Dues</Button>
-                                  </Link>
+                                  <div className="flex items-center justify-center gap-1">
+                                    <Link href={`/print/dues/${pb.student.id}?feeId=${pb.fee.id}`} target="_blank">
+                                      <Button variant="ghost" size="sm" className="h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-100">Print Dues</Button>
+                                    </Link>
+                                    <DeleteWithDoubleConfirm id={pb.fee.id} action={deleteStudentFee} itemDescription="Pending Fee" />
+                                  </div>
                                </TableCell>
                              </TableRow>
                            ))

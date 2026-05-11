@@ -239,14 +239,31 @@ model Mark {
 // ==========================================
 
 model AuditLog {
-  id          Int      @id @default(autoincrement())
-  tableName   String   @map("table_name")
-  action      String
-  changedData Json?    @map("changed_data")
-  createdBy   String?  @map("created_by")
-  timestamp   DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  tableName      String   @map("table_name")
+  action         String
+  changedData    Json?    @map("changed_data")
+  internalUserId Int?     @map("internal_user_id")
+  timestamp      DateTime @default(now())
+
+  internalUser InternalUser? @relation(fields: [internalUserId], references: [id])
 
   @@map("audit_logs")
+}
+
+// ==========================================
+// INTERNAL AUTHENTICATION
+// ==========================================
+
+model InternalUser {
+  id        Int        @id @default(autoincrement())
+  userid    String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  auditLogs AuditLog[]
+
+  @@map("internal_users")
 }
 
 // ==========================================
