@@ -12,6 +12,10 @@ services:
     # Injects the app-specific variables (like DATABASE_URL) directly into the container
     env_file:
       - ./app/.env 
+    environment:
+      - COOKIE_SECURE=${COOKIE_SECURE:-false}
+      - JWT_SECRET=${JWT_SECRET}
+      - SIGNUP_KEY=${SIGNUP_KEY:-epi-key}
     networks:
       - school_network
     depends_on:
