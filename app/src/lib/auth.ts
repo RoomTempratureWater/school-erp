@@ -28,9 +28,14 @@ export async function createSession(userId: number, userid: string) {
   const token = await signToken({ userId, userid });
   const cookieStore = await cookies();
 
+  // COOKIE_SECURE should be 'true' only if the app is served over HTTPS.
+  // For Tailscale VPN (plain HTTP), this MUST be false or the browser
+  // will silently refuse to send the cookie on subsequent requests.
+  const isSecure = process.env.COOKIE_SECURE === 'true';
+
   cookieStore.set('auth_token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: isSecure,
     expires: expiresAt,
     sameSite: 'lax',
     path: '/',
