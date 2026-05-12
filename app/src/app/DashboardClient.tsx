@@ -17,7 +17,7 @@ const feeChartConfig = {
 
 const initialEvents: CalendarEvent[] = [
   { id: "1", title: "Faculty Senate Meeting", date: new Date().toISOString() },
-  { id: "2", title: "G12 Graduation Rehearsal", date: new Date(Date.now() + 86400000*2).toISOString() },
+  { id: "2", title: "G12 Graduation Rehearsal", date: new Date(Date.now() + 86400000 * 2).toISOString() },
 ];
 
 interface DashboardClientProps {
@@ -27,18 +27,20 @@ interface DashboardClientProps {
   pendingFeesData: { standard: string; fee: number }[];
   performanceData: Record<string, any[]>;
   totalPendingFees: number;
+  diskUsage: { usedBytes: number; totalBytes: number; usedPercent: number };
 }
 
-export function DashboardClient({ 
+export function DashboardClient({
   auditLogs,
   academicYears,
   activeYearId,
   pendingFeesData,
   performanceData,
-  totalPendingFees
+  totalPendingFees,
+  diskUsage
 }: DashboardClientProps) {
   const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
-  
+
   const availableStandards = Object.keys(performanceData);
   const defaultStandard = availableStandards.length > 0 ? availableStandards[0] : "";
   const [selectedStandard, setSelectedStandard] = useState<string>(defaultStandard);
@@ -51,12 +53,12 @@ export function DashboardClient({
   return (
     <main className="flex-1 overflow-y-auto bg-monolith-bg p-6 md:p-8 w-full block">
       <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-6">
-        
+
         {/* Academic Year Filter */}
         <div className="lg:col-span-12 flex justify-end">
-          <SchoolYearFilter 
-            academicYears={academicYears} 
-            currentYearId={activeYearId} 
+          <SchoolYearFilter
+            academicYears={academicYears}
+            currentYearId={activeYearId}
           />
         </div>
 
@@ -67,7 +69,7 @@ export function DashboardClient({
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pending School Fees</p>
-                <h3 className="text-4xl md:text-5xl font-bold mt-2 text-monolith-navy tracking-tight">₹{totalPendingFees.toLocaleString(undefined, {minimumFractionDigits: 2})}</h3>
+                <h3 className="text-4xl md:text-5xl font-bold mt-2 text-monolith-navy tracking-tight">₹{totalPendingFees.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h3>
                 <div className="flex items-center gap-2 mt-4">
                   {/* Dynamic metric change logic can go here later */}
                   <span className="text-xs text-slate-400 font-medium">for selected academic year</span>
@@ -86,7 +88,7 @@ export function DashboardClient({
                 <LineChart data={pendingFeesData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ccc" />
                   <XAxis dataKey="standard" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dx={-10} tickFormatter={(val) => `₹${val/1000}k`} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dx={-10} tickFormatter={(val) => `₹${val / 1000}k`} />
                   <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
                   <Line
                     type="monotone"
@@ -120,7 +122,7 @@ export function DashboardClient({
                 </select>
               ) : null}
             </div>
-            
+
             {availableStandards.length === 0 ? (
               <div className="flex-1 flex items-center justify-center text-slate-500 text-sm font-medium">
                 No exam data available for this year.
@@ -128,11 +130,11 @@ export function DashboardClient({
             ) : (
               <>
                 <div className="mt-6 border-b border-slate-700/60 pb-8">
-                   <div className="flex items-baseline gap-4">
-                     <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                        {averagePerformance.toFixed(1)}%
-                     </h1>
-                   </div>
+                  <div className="flex items-baseline gap-4">
+                    <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
+                      {averagePerformance.toFixed(1)}%
+                    </h1>
+                  </div>
                 </div>
 
                 <div className="mt-8 flex-1 flex flex-col">
@@ -155,7 +157,7 @@ export function DashboardClient({
         {/* 3. Interactive Logs Table */}
         <section className="lg:col-span-5 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm h-[450px] flex flex-col">
           <div className="px-6 py-4 border-b shrink-0">
-             <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">System Audit Logs</h4>
+            <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">System Audit Logs</h4>
           </div>
           <div className="flex-1 overflow-hidden relative">
             <InteractiveLogsTable initialLogs={auditLogs} />
@@ -175,24 +177,33 @@ export function DashboardClient({
         </section>
 
         {/* 5. Cloud Infrastructure Storage */}
-        <section className="lg:col-span-3 bg-white rounded-2xl p-6 md:p-8 border border-slate-100 h-[450px] flex flex-col items-center justify-center text-center">
-          <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 w-full text-left">Cloud Infrastructure</h4>
-          <div className="relative w-36 h-36 flex items-center justify-center mb-8 shrink-0 mt-4">
-            <div className="absolute inset-0 rounded-full p-4" style={{ background: 'conic-gradient(#00003c 70%, #e5e7eb 0deg)' }}>
-              <div className="w-full h-full bg-white rounded-full flex flex-col items-center justify-center shadow-inner">
-                <span className="text-3xl font-black text-monolith-navy">70%</span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Used</span>
+        {(() => {
+          const pct = Math.round(diskUsage.usedPercent);
+          const pieColor = pct >= 90 ? '#ef4444' : pct >= 70 ? '#eab308' : '#22c55e';
+          const formatBytes = (bytes: number) => {
+            if (bytes >= 1e12) return `${(bytes / 1e12).toFixed(1)} TB`;
+            if (bytes >= 1e9) return `${(bytes / 1e9).toFixed(1)} GB`;
+            if (bytes >= 1e6) return `${(bytes / 1e6).toFixed(1)} MB`;
+            return `${bytes} B`;
+          };
+          return (
+            <section className="lg:col-span-3 bg-white rounded-2xl p-6 md:p-8 border border-slate-100 h-[450px] flex flex-col items-center justify-center text-center">
+              <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 w-full text-left">Cloud Infrastructure</h4>
+              <div className="relative w-36 h-36 flex items-center justify-center mb-8 shrink-0 mt-4">
+                <div className="absolute inset-0 rounded-full p-4" style={{ background: `conic-gradient(${pieColor} ${pct}%, #e5e7eb 0deg)` }}>
+                  <div className="w-full h-full bg-white rounded-full flex flex-col items-center justify-center shadow-inner">
+                    <span className="text-3xl font-black" style={{ color: pieColor }}>{pct}%</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">Used</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="mb-4">
-            <p className="text-sm font-bold text-monolith-navy">1.4 TB of 2 TB used</p>
-            <p className="text-[10px] text-slate-400 mt-1">Institutional Storage Quota</p>
-          </div>
-          <button className="w-full py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-black transition shadow-xl shadow-slate-200 mt-auto">
-            Upgrade Infrastructure
-          </button>
-        </section>
+              <div className="mb-4">
+                <p className="text-sm font-bold text-monolith-navy">{formatBytes(diskUsage.usedBytes)} of {formatBytes(diskUsage.totalBytes)} used</p>
+                <p className="text-[10px] text-slate-400 mt-1">Server Disk Usage (/)</p>
+              </div>
+            </section>
+          );
+        })()}
 
       </div>
     </main>
