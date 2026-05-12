@@ -37,8 +37,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_USER:-postgres}
     volumes:
-      - ./volumes/pgdata:/var/lib/postgresql/data
-      # - ./db/init:/docker-entrypoint-initdb.d
+      # Changed to use Docker named volume to survive GH Actions cleanup
+      - pgdata:/var/lib/postgresql/data
     networks:
       - school_network
     # Healthcheck ensures the DB is accepting connections before Next.js/Prisma boots up
@@ -60,10 +60,16 @@ services:
       - "${TAILSCALE_PORT}:${MINIO_PORT:-9000}:9000"
       - "${TAILSCALE_PORT}:${MINIO_CONSOLE_PORT:-9001}:9001"
     volumes:
-      - ./volumes/miniodata:/data
+      # Changed to use Docker named volume to survive GH Actions cleanup
+      - miniodata:/data
     networks:
       - school_network
 
 networks:
   school_network:
     driver: bridge
+
+# Defines the named volumes stored safely in /var/lib/docker/volumes/
+volumes:
+  pgdata:
+  miniodata:
