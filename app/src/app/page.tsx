@@ -1,5 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { DashboardClient } from './DashboardClient';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
+
+const execFileAsync = promisify(execFile);
 
 export default async function Dashboard(props: { searchParams: Promise<{ [key: string]: string | undefined }> }) {
   const searchParams = await props.searchParams;
@@ -62,7 +66,7 @@ export default async function Dashboard(props: { searchParams: Promise<{ [key: s
 
   // 3. Exam Performance Data
   const performanceData: Record<string, any[]> = {};
-  
+
   if (activeYearId) {
     const marks = await prisma.mark.findMany({
       where: {
@@ -95,14 +99,32 @@ export default async function Dashboard(props: { searchParams: Promise<{ [key: s
     });
   }
 
+  // 4. Disk Usage Data
+  let diskUsage = { usedBytes: 0, totalBytes: 0, usedPercent: 0 };
+  try {
+    const { stdout } = await execFileAsync("df", ["-B1", "/"]);
+    const lines = stdout.trim().split("\n");
+    if (lines.length >= 2) {
+      const parts = lines[1].split(/\s+/);
+      // df -B1 output: Filesystem 1B-blocks Used Available Use% Mounted
+      const totalBytes = parseInt(parts[1], 10) || 0;
+      const usedBytes = parseInt(parts[2], 10) || 0;
+      const usedPercent = totalBytes > 0 ? (usedBytes / totalBytes) * 100 : 0;
+      diskUsage = { usedBytes, totalBytes, usedPercent };
+    }
+  } catch (err) {
+    console.error("Failed to get disk usage:", err);
+  }
+
   return (
-    <DashboardClient 
-      auditLogs={auditLogs} 
+    <DashboardClient
+      auditLogs={auditLogs}
       academicYears={academicYears}
       activeYearId={activeYearId}
       pendingFeesData={pendingFeesData}
       performanceData={performanceData}
       totalPendingFees={totalPendingFees}
+      diskUsage={diskUsage}
     />
   );
 }
