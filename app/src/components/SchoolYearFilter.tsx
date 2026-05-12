@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 interface AcademicYear {
   id: number;
@@ -16,6 +16,7 @@ interface Props {
 export default function SchoolYearFilter({ academicYears, currentYearId }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const activeYearId = searchParams.get("yearId") || (currentYearId ? String(currentYearId) : "");
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -27,7 +28,7 @@ export default function SchoolYearFilter({ academicYears, currentYearId }: Props
       params.delete("yearId");
     }
     // keep other params, just update yearId
-    router.push(`/fees?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (

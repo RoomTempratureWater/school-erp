@@ -6,19 +6,8 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLe
 import { InteractiveLogsTable } from "@/components/InteractiveLogsTable";
 import { EventCalendar, CalendarEvent } from "@/components/EventCalendar";
 
-// --- DUMMY DATA ---
-const dummyPendingFeesData = [
-  { standard: "Std 1", fee: 12000 },
-  { standard: "Std 2", fee: 15500 },
-  { standard: "Std 3", fee: 8000 },
-  { standard: "Std 4", fee: 22000 },
-  { standard: "Std 5", fee: 18500 },
-  { standard: "Std 6", fee: 9000 },
-  { standard: "Std 7", fee: 11000 },
-  { standard: "Std 8", fee: 20000 },
-  { standard: "Std 9", fee: 25000 },
-  { standard: "Std 10", fee: 32000 },
-];
+import SchoolYearFilter from "@/components/SchoolYearFilter";
+
 const feeChartConfig = {
   fee: {
     label: "Pending Fees (₹)",
@@ -26,41 +15,51 @@ const feeChartConfig = {
   },
 };
 
-type StandardKey = "Std 8" | "Std 9" | "Std 10";
-const dummyPerformanceData: Record<StandardKey, any[]> = {
-  "Std 10": [
-    { subject: "Maths", average: 85, fill: "#ffffff" },
-    { subject: "English", average: 92, fill: "#8b5cf6" },
-    { subject: "History", average: 70, fill: "#3b82f6" },
-    { subject: "Science", average: 75, fill: "#d946ef" },
-  ],
-  "Std 9": [
-    { subject: "Maths", average: 84, fill: "#ffffff" },
-    { subject: "English", average: 88, fill: "#8b5cf6" },
-    { subject: "History", average: 90, fill: "#3b82f6" },
-    { subject: "Science", average: 82, fill: "#d946ef" },
-  ],
-  "Std 8": [
-    { subject: "Maths", average: 81, fill: "#ffffff" },
-    { subject: "English", average: 82, fill: "#8b5cf6" },
-    { subject: "History", average: 88, fill: "#3b82f6" },
-    { subject: "Science", average: 85, fill: "#d946ef" },
-  ],
-};
-
 const initialEvents: CalendarEvent[] = [
   { id: "1", title: "Faculty Senate Meeting", date: new Date().toISOString() },
   { id: "2", title: "G12 Graduation Rehearsal", date: new Date(Date.now() + 86400000*2).toISOString() },
 ];
 
-export function DashboardClient({ auditLogs }: { auditLogs: any[] }) {
+interface DashboardClientProps {
+  auditLogs: any[];
+  academicYears: { id: number; name: string; isCurrent: boolean }[];
+  activeYearId: number | null;
+  pendingFeesData: { standard: string; fee: number }[];
+  performanceData: Record<string, any[]>;
+  totalPendingFees: number;
+}
+
+export function DashboardClient({ 
+  auditLogs,
+  academicYears,
+  activeYearId,
+  pendingFeesData,
+  performanceData,
+  totalPendingFees
+}: DashboardClientProps) {
   const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
-  const [selectedStandard, setSelectedStandard] = useState<StandardKey>("Std 10");
+  
+  const availableStandards = Object.keys(performanceData);
+  const defaultStandard = availableStandards.length > 0 ? availableStandards[0] : "";
+  const [selectedStandard, setSelectedStandard] = useState<string>(defaultStandard);
+
+  const currentPerformance = performanceData[selectedStandard] || [];
+  const averagePerformance = currentPerformance.length > 0
+    ? currentPerformance.reduce((acc, curr) => acc + curr.average, 0) / currentPerformance.length
+    : 0;
 
   return (
     <main className="flex-1 overflow-y-auto bg-monolith-bg p-6 md:p-8 w-full block">
       <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-6">
         
+        {/* Academic Year Filter */}
+        <div className="lg:col-span-12 flex justify-end">
+          <SchoolYearFilter 
+            academicYears={academicYears} 
+            currentYearId={activeYearId} 
+          />
+        </div>
+
         {/* ROW 1 */}
         {/* 1. Pending Fees Line Chart Card */}
         <section className="lg:col-span-8 bg-slate-200/50 rounded-2xl p-6 md:p-8 flex flex-col justify-between h-[450px]">
@@ -68,72 +67,87 @@ export function DashboardClient({ auditLogs }: { auditLogs: any[] }) {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pending School Fees</p>
-                <h3 className="text-4xl md:text-5xl font-bold mt-2 text-monolith-navy tracking-tight">₹1,73,000.00</h3>
+                <h3 className="text-4xl md:text-5xl font-bold mt-2 text-monolith-navy tracking-tight">₹{totalPendingFees.toLocaleString(undefined, {minimumFractionDigits: 2})}</h3>
                 <div className="flex items-center gap-2 mt-4">
-                  <span className="bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-xs font-bold">+5.2%</span>
-                  <span className="text-xs text-slate-400 font-medium">since last month</span>
+                  {/* Dynamic metric change logic can go here later */}
+                  <span className="text-xs text-slate-400 font-medium">for selected academic year</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="flex-1 mt-8 w-full h-[250px] -ml-4">
-            <ChartContainer config={feeChartConfig} className="w-full h-full">
-              <LineChart data={dummyPendingFeesData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ccc" />
-                <XAxis dataKey="standard" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dx={-10} tickFormatter={(val) => `₹${val/1000}k`} />
-                <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
-                <Line
-                  type="monotone"
-                  dataKey="fee"
-                  stroke="var(--color-fee)"
-                  strokeWidth={4}
-                  dot={{ r: 4, strokeWidth: 2 }}
-                  activeDot={{ r: 6, strokeWidth: 0 }}
-                  className="filter drop-shadow-[0_0_8px_rgba(99,102,241,0.4)]"
-                />
-              </LineChart>
-            </ChartContainer>
+            {pendingFeesData.length === 0 ? (
+              <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm font-medium">
+                No pending fees available for this academic year.
+              </div>
+            ) : (
+              <ChartContainer config={feeChartConfig} className="w-full h-full">
+                <LineChart data={pendingFeesData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ccc" />
+                  <XAxis dataKey="standard" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dx={-10} tickFormatter={(val) => `₹${val/1000}k`} />
+                  <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
+                  <Line
+                    type="monotone"
+                    dataKey="fee"
+                    stroke="var(--color-fee)"
+                    strokeWidth={4}
+                    dot={{ r: 4, strokeWidth: 2 }}
+                    activeDot={{ r: 6, strokeWidth: 0 }}
+                    className="filter drop-shadow-[0_0_8px_rgba(99,102,241,0.4)]"
+                  />
+                </LineChart>
+              </ChartContainer>
+            )}
           </div>
         </section>
 
-        {/* 2. Custom Aesthetic Performance Matrix (from Screenshot) */}
+        {/* 2. Custom Aesthetic Performance Matrix */}
         <section className="lg:col-span-4 bg-[#18181b] rounded-2xl p-6 md:p-8 flex flex-col justify-between h-[450px] shadow-sm text-white">
           <div className="flex flex-col h-full relative">
             <div className="flex justify-between items-center mb-6 shrink-0">
               <h4 className="text-[13px] font-semibold text-slate-300">Overall Standard Performance</h4>
-              <select
-                className="text-xs font-bold text-slate-200 bg-white/10 border border-white/10 rounded-md px-3 py-1.5 outline-none focus:ring-2 focus:ring-monolith-accent-blue hover:bg-white/20 transition cursor-pointer"
-                value={selectedStandard}
-                onChange={(e) => setSelectedStandard(e.target.value as StandardKey)}
-              >
-                <option className="bg-slate-800 text-white" value="Std 8">Std 8</option>
-                <option className="bg-slate-800 text-white" value="Std 9">Std 9</option>
-                <option className="bg-slate-800 text-white" value="Std 10">Std 10</option>
-              </select>
+              {availableStandards.length > 0 ? (
+                <select
+                  className="text-xs font-bold text-slate-200 bg-white/10 border border-white/10 rounded-md px-3 py-1.5 outline-none focus:ring-2 focus:ring-monolith-accent-blue hover:bg-white/20 transition cursor-pointer"
+                  value={selectedStandard}
+                  onChange={(e) => setSelectedStandard(e.target.value)}
+                >
+                  {availableStandards.map((std) => (
+                    <option key={std} className="bg-slate-800 text-white" value={std}>{std}</option>
+                  ))}
+                </select>
+              ) : null}
             </div>
             
-            <div className="mt-6 border-b border-slate-700/60 pb-8">
-               <div className="flex items-baseline gap-4">
-                 <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                    {(dummyPerformanceData[selectedStandard].reduce((acc, curr) => acc + curr.average, 0) / dummyPerformanceData[selectedStandard].length).toFixed(1)}%
-                 </h1>
-                 <span className="text-emerald-400 font-semibold text-xs tracking-wider">+4.2%</span>
-               </div>
-            </div>
-
-            <div className="mt-8 flex-1 flex flex-col">
-              <div className="flex gap-2 w-full mt-auto">
-                {dummyPerformanceData[selectedStandard].map((subjectData) => (
-                  <div key={subjectData.subject} className="flex flex-col" style={{ width: `${subjectData.average}%` }}>
-                    <div className="h-1.5 w-full rounded-full mb-3" style={{ backgroundColor: subjectData.fill }}></div>
-                    <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-1 mt-1">{subjectData.subject}</span>
-                    <span className="text-sm font-bold text-white">{subjectData.average}%</span>
-                  </div>
-                ))}
+            {availableStandards.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center text-slate-500 text-sm font-medium">
+                No exam data available for this year.
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="mt-6 border-b border-slate-700/60 pb-8">
+                   <div className="flex items-baseline gap-4">
+                     <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
+                        {averagePerformance.toFixed(1)}%
+                     </h1>
+                   </div>
+                </div>
+
+                <div className="mt-8 flex-1 flex flex-col">
+                  <div className="flex gap-2 w-full mt-auto">
+                    {currentPerformance.map((subjectData) => (
+                      <div key={subjectData.subject} className="flex flex-col" style={{ width: `${subjectData.average}%` }}>
+                        <div className="h-1.5 w-full rounded-full mb-3" style={{ backgroundColor: subjectData.fill }}></div>
+                        <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-1 mt-1 truncate" title={subjectData.subject}>{subjectData.subject}</span>
+                        <span className="text-sm font-bold text-white">{subjectData.average}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </section>
 
