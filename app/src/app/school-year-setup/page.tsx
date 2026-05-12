@@ -143,6 +143,7 @@ export default async function SchoolYearSetupPage(props: { searchParams: Promise
                          <TableRow>
                            <TableHead>Name</TableHead>
                            <TableHead>Year</TableHead>
+                           <TableHead>Standard</TableHead>
                            <TableHead className="text-right">Amount</TableHead>
                            <TableHead className="text-right">Action</TableHead>
                          </TableRow>
@@ -150,16 +151,27 @@ export default async function SchoolYearSetupPage(props: { searchParams: Promise
                        <TableBody>
                          {feeCategories.length === 0 ? (
                            <TableRow>
-                             <TableCell colSpan={4} className="text-center py-6 text-muted-foreground text-sm">No fee templates found for this year.</TableCell>
+                             <TableCell colSpan={5} className="text-center py-6 text-muted-foreground text-sm">No fee templates found for this year.</TableCell>
                            </TableRow>
                          ) : (
                            feeCategories.map(fc => (
                              <TableRow key={fc.id}>
-                               <TableCell className="font-medium text-muted-foreground">{fc.name} <span className="text-xs">{(fc.standard ? `(Std: ${fc.standard})` : '')}</span></TableCell>
+                               <TableCell className="font-medium text-muted-foreground">{fc.name}</TableCell>
                                <TableCell>
                                  <span className="text-[10px] uppercase font-bold tracking-wider bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100">
                                    {fc.academicYear.name}
                                  </span>
+                               </TableCell>
+                               <TableCell>
+                                  {fc.standard ? (
+                                    <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-medium">
+                                      Std {fc.standard}
+                                    </span>
+                                  ) : (
+                                    <span className="text-[10px] bg-slate-50 px-2 py-0.5 rounded border border-slate-100 text-slate-400 italic">
+                                      Ad-Hoc
+                                    </span>
+                                  )}
                                </TableCell>
                                <TableCell className="text-right font-semibold">{fc.amount.toLocaleString()}</TableCell>
                                <TableCell className="text-right">

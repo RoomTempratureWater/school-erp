@@ -125,18 +125,21 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
   }));
 
   // PENDING BALANCES — also filtered by year
-  const pendingWhere: any = {
-    fees: { some: { status: { not: "PAID" } } }
-  };
-
   const feeWhere: any = {
-    status: { not: "PAID" as const }
+    status: { not: "PAID" as const },
+    feeCategory: { standard: { not: null } }
   };
 
   if (activeYearId) {
-    feeWhere.feeCategory = { academicYearId: activeYearId };
-    pendingWhere.fees = { some: { ...feeWhere } };
+    feeWhere.feeCategory = {
+      ...feeWhere.feeCategory,
+      academicYearId: activeYearId
+    };
   }
+
+  const pendingWhere: any = {
+    fees: { some: { ...feeWhere } }
+  };
 
   // Apply dues search filter
   if (duesSearchParam) {

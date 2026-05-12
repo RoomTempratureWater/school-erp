@@ -17,7 +17,7 @@ export async function addStudent(formData: FormData) {
     throw new Error("Missing required fields.");
   }
 
-  await prisma.student.create({
+  const student = await prisma.student.create({
     data: {
       enrollmentNo,
       firstName,
@@ -30,6 +30,33 @@ export async function addStudent(formData: FormData) {
       status: "ACTIVE"
     }
   });
+
+  const currentYear = await prisma.academicYear.findFirst({
+    where: { isCurrent: true }
+  });
+
+  if (currentYear) {
+    const feeCategories = await prisma.feeCategory.findMany({
+      where: {
+        academicYearId: currentYear.id,
+        standard: student.standard
+      }
+    });
+
+    if (feeCategories.length > 0) {
+      await prisma.studentFee.createMany({
+        data: feeCategories.map(fc => ({
+          studentId: student.id,
+          feeCategoryId: fc.id,
+          amountDue: fc.amount,
+          amountPaid: 0,
+          status: "PENDING",
+          studentStandard: student.standard,
+          studentDivision: student.division
+        }))
+      });
+    }
+  }
 
   revalidatePath("/admission");
 }

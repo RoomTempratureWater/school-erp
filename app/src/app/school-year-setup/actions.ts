@@ -24,7 +24,7 @@ export async function createFeeCategory(formData: FormData) {
   const academicYearId = parseInt(formData.get("academicYearId") as string, 10);
   const standard = formData.get("standard") as string;
 
-  await prisma.feeCategory.create({
+  const category = await prisma.feeCategory.create({
     data: {
       name,
       amount,
@@ -32,6 +32,26 @@ export async function createFeeCategory(formData: FormData) {
       standard: standard || null
     }
   });
+
+  if (standard) {
+    const students = await prisma.student.findMany({
+      where: { standard, status: "ACTIVE" }
+    });
+
+    if (students.length > 0) {
+      await prisma.studentFee.createMany({
+        data: students.map(s => ({
+          studentId: s.id,
+          feeCategoryId: category.id,
+          amountDue: amount,
+          amountPaid: 0,
+          status: "PENDING",
+          studentStandard: s.standard,
+          studentDivision: s.division
+        }))
+      });
+    }
+  }
 
   revalidatePath("/school-year-setup");
   revalidatePath("/fees");
