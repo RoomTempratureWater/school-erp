@@ -12,8 +12,8 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: 'School ERP - Dashboard',
-  description: 'Internal Management System',
+  title: 'Epiphany School - Internal Management',
+  description: 'Epiphany School Internal Management System',
 };
 
 export default async function RootLayout({
@@ -38,10 +38,14 @@ export default async function RootLayout({
         {/* BEGIN: Left Sidebar (Hidden on Auth Pages) */}
         {!isAuthPage && (
           <aside className="hidden lg:flex w-64 bg-white m-4 mr-0 rounded-2xl border border-slate-200 flex-col shrink-0 shadow-sm overflow-hidden text-slate-700">
-            <div className="p-6">
-              <h1 className="text-xl font-bold tracking-widest uppercase text-monolith-navy">Monolith</h1>
-              <h2 className="text-xs font-semibold tracking-[0.2em] text-slate-500 mt-1 uppercase">Academy</h2>
-              <p className="text-[10px] text-slate-400 mt-4 font-bold tracking-widest uppercase">Registry Office</p>
+            <div className="p-5">
+              <div className="flex items-center gap-3">
+                <img src="/epiphany-school-logo.jpg" alt="Epiphany School" className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                <div className="min-w-0">
+                  <h1 className="text-sm font-bold tracking-wide uppercase text-monolith-navy leading-tight">Epiphany School</h1>
+                  <p className="text-[9px] text-slate-400 font-semibold tracking-widest uppercase mt-0.5">Internal Management</p>
+                </div>
+              </div>
             </div>
             <nav className="flex-1 px-4 mt-4 space-y-1">
               <Link href="/" className="flex items-center gap-3 px-4 py-3 bg-slate-50 text-monolith-navy font-semibold rounded-md transition hover:bg-slate-100">

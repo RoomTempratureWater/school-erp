@@ -4,7 +4,9 @@ import { useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, BarChart, Bar } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { InteractiveLogsTable } from "@/components/InteractiveLogsTable";
-import { EventCalendar, CalendarEvent } from "@/components/EventCalendar";
+
+import { FeeCollectionChart } from "@/components/FeeCollectionChart";
+import { FeeCollectionData } from "@/app/actions/feeCollection";
 
 import SchoolYearFilter from "@/components/SchoolYearFilter";
 
@@ -15,10 +17,7 @@ const feeChartConfig = {
   },
 };
 
-const initialEvents: CalendarEvent[] = [
-  { id: "1", title: "Faculty Senate Meeting", date: new Date().toISOString() },
-  { id: "2", title: "G12 Graduation Rehearsal", date: new Date(Date.now() + 86400000 * 2).toISOString() },
-];
+
 
 interface DashboardClientProps {
   auditLogs: any[];
@@ -28,6 +27,7 @@ interface DashboardClientProps {
   performanceData: Record<string, any[]>;
   totalPendingFees: number;
   diskUsage: { usedBytes: number; totalBytes: number; usedPercent: number };
+  feeCollectionData: FeeCollectionData;
 }
 
 export function DashboardClient({
@@ -37,9 +37,10 @@ export function DashboardClient({
   pendingFeesData,
   performanceData,
   totalPendingFees,
-  diskUsage
+  diskUsage,
+  feeCollectionData
 }: DashboardClientProps) {
-  const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
+
 
   const availableStandards = Object.keys(performanceData);
   const defaultStandard = availableStandards.length > 0 ? availableStandards[0] : "";
@@ -154,7 +155,7 @@ export function DashboardClient({
         </section>
 
         {/* ROW 2 */}
-        {/* 3. Interactive Logs Table */}
+        {/* Audit Logs — left */}
         <section className="lg:col-span-5 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm h-[450px] flex flex-col">
           <div className="px-6 py-4 border-b shrink-0">
             <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">System Audit Logs</h4>
@@ -164,19 +165,10 @@ export function DashboardClient({
           </div>
         </section>
 
-        {/* 4. Calendar Component */}
-        <section className="lg:col-span-4 bg-white rounded-2xl p-6 md:p-8 border border-slate-100 h-[450px] overflow-y-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Calendar & Events</h4>
-          </div>
-          <EventCalendar
-            events={events}
-            onAddEvent={(e) => setEvents([...events, e])}
-            onRemoveEvent={(id) => setEvents(events.filter(e => e.id !== id))}
-          />
-        </section>
+        {/* Fee Collection Analytics — middle */}
+        <FeeCollectionChart initialData={feeCollectionData} />
 
-        {/* 5. Cloud Infrastructure Storage */}
+        {/* Cloud Infrastructure Storage — right */}
         {(() => {
           const pct = Math.round(diskUsage.usedPercent);
           const pieColor = pct >= 90 ? '#ef4444' : pct >= 70 ? '#eab308' : '#22c55e';
@@ -187,19 +179,19 @@ export function DashboardClient({
             return `${bytes} B`;
           };
           return (
-            <section className="lg:col-span-3 bg-white rounded-2xl p-6 md:p-8 border border-slate-100 h-[450px] flex flex-col items-center justify-center text-center">
-              <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 w-full text-left">Cloud Infrastructure</h4>
-              <div className="relative w-36 h-36 flex items-center justify-center mb-8 shrink-0 mt-4">
-                <div className="absolute inset-0 rounded-full p-4" style={{ background: `conic-gradient(${pieColor} ${pct}%, #e5e7eb 0deg)` }}>
+            <section className="lg:col-span-2 bg-white rounded-2xl p-4 md:p-5 border border-slate-100 h-[450px] flex flex-col items-center justify-center text-center">
+              <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 w-full text-left">Cloud Infra</h4>
+              <div className="relative w-28 h-28 flex items-center justify-center mb-5 shrink-0 mt-2">
+                <div className="absolute inset-0 rounded-full p-3" style={{ background: `conic-gradient(${pieColor} ${pct}%, #e5e7eb 0deg)` }}>
                   <div className="w-full h-full bg-white rounded-full flex flex-col items-center justify-center shadow-inner">
-                    <span className="text-3xl font-black" style={{ color: pieColor }}>{pct}%</span>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">Used</span>
+                    <span className="text-2xl font-black" style={{ color: pieColor }}>{pct}%</span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase">Used</span>
                   </div>
                 </div>
               </div>
-              <div className="mb-4">
-                <p className="text-sm font-bold text-monolith-navy">{formatBytes(diskUsage.usedBytes)} of {formatBytes(diskUsage.totalBytes)} used</p>
-                <p className="text-[10px] text-slate-400 mt-1">Server Disk Usage (/)</p>
+              <div className="mb-2">
+                <p className="text-xs font-bold text-monolith-navy">{formatBytes(diskUsage.usedBytes)} / {formatBytes(diskUsage.totalBytes)}</p>
+                <p className="text-[9px] text-slate-400 mt-1">Server Disk (/)</p>
               </div>
             </section>
           );
