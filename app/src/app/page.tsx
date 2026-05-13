@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { DashboardClient } from './DashboardClient';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import { getFeeCollectionData } from './actions/feeCollection';
 
 const execFileAsync = promisify(execFile);
 
@@ -116,6 +117,9 @@ export default async function Dashboard(props: { searchParams: Promise<{ [key: s
     console.error("Failed to get disk usage:", err);
   }
 
+  // 5. Fee Collection Analytics (default: current month)
+  const feeCollectionData = await getFeeCollectionData();
+
   return (
     <DashboardClient
       auditLogs={auditLogs}
@@ -125,6 +129,7 @@ export default async function Dashboard(props: { searchParams: Promise<{ [key: s
       performanceData={performanceData}
       totalPendingFees={totalPendingFees}
       diskUsage={diskUsage}
+      feeCollectionData={feeCollectionData}
     />
   );
 }
