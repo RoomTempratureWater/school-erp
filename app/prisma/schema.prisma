@@ -42,6 +42,12 @@ enum PaymentMethod {
   BANK_TRANSFER
 }
 
+enum PromotionStatus {
+  PROMOTED
+  DETAINED
+  RE_EXAM
+}
+
 // ==========================================
 // CORE ENTITIES
 // ==========================================
@@ -85,20 +91,24 @@ model StudentDocument {
 }
 
 model Staff {
-  id             Int       @id @default(autoincrement())
-  employeeId     String    @unique
-  firstName      String
-  lastName       String
-  role           StaffRole
-  address        String?
-  phone          String?
-  profilePicture String? // MinIO object key
-  jobDescription String?
-  dosAndDonts    String?
-  achievements   String?
-  documentsPath  Json? // Array of paths in Minio
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id               Int       @id @default(autoincrement())
+  employeeId       String    @unique
+  firstName        String
+  lastName         String
+  role             StaffRole
+  address          String?
+  phone            String?
+  profilePicture   String? // MinIO object key
+  jobDescription   String?
+  dosAndDonts      String?
+  achievements     String?
+  documentsPath    Json? // Array of paths in Minio
+  dateOfJoining    DateTime?
+  dateOfLeaving    DateTime?
+  reasonForLeaving String?
+  memos            Json?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   documents StaffDocument[]
 
@@ -224,6 +234,7 @@ model Mark {
   subject       String
   marksObtained Float
   maxMarks      Float
+  graceMarks    Float?   @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -271,14 +282,15 @@ model InternalUser {
 // ==========================================
 
 model StudentPromotion {
-  id             Int      @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
   studentId      Int
   academicYearId Int
   fromStandard   String
   fromDivision   String
   toStandard     String
   toDivision     String
-  promotedAt     DateTime @default(now())
+  status         PromotionStatus @default(PROMOTED)
+  promotedAt     DateTime        @default(now())
   remarks        String? // e.g. "Promoted", "Retained", "Section change"
 
   student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)

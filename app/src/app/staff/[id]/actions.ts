@@ -12,6 +12,10 @@ export async function updateStaff(formData: FormData) {
   const jobDescription = formData.get("jobDescription") as string;
   const dosAndDonts = formData.get("dosAndDonts") as string;
   const achievements = formData.get("achievements") as string;
+  const dateOfJoining = formData.get("dateOfJoining") as string;
+  const dateOfLeaving = formData.get("dateOfLeaving") as string;
+  const reasonForLeaving = formData.get("reasonForLeaving") as string;
+  const memos = formData.get("memos") as string;
 
   await prisma.staff.update({
     where: { id },
@@ -24,6 +28,10 @@ export async function updateStaff(formData: FormData) {
       jobDescription: jobDescription || null,
       dosAndDonts: dosAndDonts || null,
       achievements: achievements || null,
+      dateOfJoining: dateOfJoining ? new Date(dateOfJoining) : null,
+      dateOfLeaving: dateOfLeaving ? new Date(dateOfLeaving) : null,
+      reasonForLeaving: reasonForLeaving || null,
+      memos: memos ? [{ text: memos, date: new Date().toISOString() }] : null,
     },
   });
 

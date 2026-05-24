@@ -32,16 +32,22 @@ export default function PromotionTable({
   allDivisions: string[];
 }) {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const [promotionData, setPromotionData] = useState<Record<number, { standard: string; division: string }>>(
+  const [promotionData, setPromotionData] = useState<Record<number, { standard: string; division: string; status: "PROMOTED" | "RE_EXAM" | "DETAINED" }>>(
     Object.fromEntries(
       students.map((s) => {
-        // Auto-fill logic: If not fail, promote to next standard. If fail, keep same.
+        // Auto-fill logic: If not fail, promote to next standard. If fail, set to re-exam.
         const currentStd = parseInt(s.standard, 10);
         let nextStd = s.standard;
-        if (!isNaN(currentStd) && !s.isFail) {
+        let status: "PROMOTED" | "RE_EXAM" | "DETAINED" = "PROMOTED";
+        
+        if (s.isFail) {
+          status = "RE_EXAM";
+          nextStd = s.standard;
+        } else if (!isNaN(currentStd)) {
           nextStd = (currentStd + 1).toString();
         }
-        return [s.id, { standard: nextStd, division: s.division }];
+        
+        return [s.id, { standard: nextStd, division: s.division, status }];
       })
     )
   );
@@ -64,11 +70,22 @@ export default function PromotionTable({
     setSelectedIds(next);
   };
 
-  const updateTarget = (id: number, field: "standard" | "division", value: string) => {
-    setPromotionData((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], [field]: value },
-    }));
+  const updateTarget = (id: number, field: "standard" | "division" | "status", value: string) => {
+    setPromotionData((prev) => {
+      const updated = { ...prev[id], [field]: value as any };
+      
+      if (field === "status") {
+        const student = students.find(s => s.id === id)!;
+        if (value === "PROMOTED") {
+          const currentStd = parseInt(student.standard, 10);
+          if (!isNaN(currentStd)) updated.standard = (currentStd + 1).toString();
+        } else {
+          updated.standard = student.standard;
+        }
+      }
+      
+      return { ...prev, [id]: updated };
+    });
   };
 
   const handlePromote = async () => {
@@ -82,6 +99,7 @@ export default function PromotionTable({
         fromDivision: student.division,
         toStandard: promotionData[id].standard,
         toDivision: promotionData[id].division,
+        status: promotionData[id].status,
       };
     });
 
@@ -145,7 +163,8 @@ export default function PromotionTable({
                 <TableHead>Enrollment & Name</TableHead>
                 <TableHead>Current Class</TableHead>
                 <TableHead>Exam Context</TableHead>
-                <TableHead className="w-[250px]">Promotion Target</TableHead>
+                <TableHead className="w-[120px]">Status</TableHead>
+                <TableHead className="w-[200px]">Promotion Target</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -197,12 +216,28 @@ export default function PromotionTable({
                       )}
                     </TableCell>
                     <TableCell>
+                      <select
+                        value={promotionData[s.id].status}
+                        onChange={(e) => updateTarget(s.id, "status", e.target.value)}
+                        className={`w-full rounded-md border border-input px-2 py-1.5 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${
+                          promotionData[s.id].status === "PROMOTED" ? "bg-emerald-50 text-emerald-800 border-emerald-200" :
+                          promotionData[s.id].status === "RE_EXAM" ? "bg-amber-50 text-amber-800 border-amber-200" :
+                          "bg-red-50 text-red-800 border-red-200"
+                        }`}
+                      >
+                        <option value="PROMOTED">Promoted</option>
+                        <option value="RE_EXAM">Re-Exam</option>
+                        <option value="DETAINED">Detained</option>
+                      </select>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="relative flex-1">
                           <select
                             value={promotionData[s.id].standard}
                             onChange={(e) => updateTarget(s.id, "standard", e.target.value)}
-                            className="w-full rounded-md border border-input bg-white px-2 py-1.5 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            disabled={promotionData[s.id].status !== "PROMOTED"}
+                            className="w-full rounded-md border border-input bg-white px-2 py-1.5 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50"
                           >
                             {allStandards.map((std) => (
                               <option key={std} value={std}>{std}</option>
