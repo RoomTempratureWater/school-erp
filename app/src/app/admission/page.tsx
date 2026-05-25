@@ -19,7 +19,7 @@ export default async function AdmissionPage(props: { searchParams: Promise<{ [ke
       OR: search ? [
         { firstName: { contains: search, mode: 'insensitive' } },
         { lastName: { contains: search, mode: 'insensitive' } },
-        { enrollmentNo: { contains: search, mode: 'insensitive' } },
+        { grNo: { contains: search, mode: 'insensitive' } },
       ] : undefined,
       standard: standard ? standard : undefined,
       division: division ? division : undefined,
@@ -55,8 +55,8 @@ export default async function AdmissionPage(props: { searchParams: Promise<{ [ke
                 <CardContent>
                    <form action={addStudent} className="space-y-4">
                       <div className="space-y-1">
-                         <label className="text-xs font-medium text-foreground">Enrollment No.</label>
-                         <Input name="enrollmentNo" placeholder="E.g. ENR-2024-001" required />
+                         <label className="text-xs font-medium text-foreground">GR No.</label>
+                         <Input name="grNo" placeholder="E.g. ENR-2024-001" required />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                          <div className="space-y-1">
@@ -72,6 +72,10 @@ export default async function AdmissionPage(props: { searchParams: Promise<{ [ke
                          <label className="text-xs font-medium text-foreground">Date of Birth</label>
                          <Input name="dateOfBirth" type="date" required />
                       </div>
+                      <div className="space-y-1">
+                         <label className="text-xs font-medium text-foreground">Date of Admission</label>
+                         <Input name="dateOfAdmission" type="date" defaultValue={new Date().toISOString().split("T")[0]} required />
+                      </div>
                       <div className="grid grid-cols-2 gap-4">
                          <div className="space-y-1">
                            <label className="text-xs font-medium text-foreground">Standard</label>
@@ -82,13 +86,85 @@ export default async function AdmissionPage(props: { searchParams: Promise<{ [ke
                            <Input name="division" placeholder="E.g. A" required />
                          </div>
                       </div>
-                      <div className="space-y-1">
-                         <label className="text-xs font-medium text-foreground">Parent/Guardian Name</label>
-                         <Input name="parentName" />
+
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">Aadhar No.</label>
+                           <Input name="aadharNo" />
+                         </div>
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">State Code</label>
+                           <Input name="stateCode" />
+                         </div>
                       </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">PEN No</label>
+                           <Input name="penNo" />
+                         </div>
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">Appar ID</label>
+                           <Input name="apparId" />
+                         </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">Blood Group</label>
+                           <Input name="bloodGroup" />
+                         </div>
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">Mother Tongue</label>
+                           <Input name="motherTongue" />
+                         </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">Religion</label>
+                           <Input name="religion" />
+                         </div>
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">Caste / Category</label>
+                           <Input name="caste" placeholder="Caste" />
+                           <Input name="category" placeholder="Category" className="mt-1" />
+                         </div>
+                      </div>
+
                       <div className="space-y-1">
-                         <label className="text-xs font-medium text-foreground">Contact Number</label>
-                         <Input name="contactNumber" />
+                         <label className="text-xs font-medium text-foreground">Birth Place (City, State)</label>
+                         <div className="grid grid-cols-2 gap-2">
+                           <Input name="birthCity" placeholder="City" />
+                           <Input name="birthState" placeholder="State" />
+                         </div>
+                      </div>
+
+                      <div className="space-y-1">
+                         <label className="text-xs font-medium text-foreground">Current Address</label>
+                         <Input name="currentAddress" />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">Father's Name</label>
+                           <Input name="fatherName" />
+                         </div>
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">Mother's Name</label>
+                           <Input name="motherName" />
+                         </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">Mobile Number</label>
+                           <Input name="mobileNumber" />
+                         </div>
+                         <div className="space-y-1">
+                           <label className="text-xs font-medium text-foreground">Contact Email</label>
+                           <Input name="contactEmail" type="email" />
+                         </div>
                       </div>
                       <Button type="submit" className="w-full mt-2">Submit Registration</Button>
                    </form>
@@ -122,7 +198,7 @@ export default async function AdmissionPage(props: { searchParams: Promise<{ [ke
                 <Table>
                   <TableHeader className="bg-slate-50/80">
                     <TableRow>
-                      <TableHead>Enrollment No</TableHead>
+                      <TableHead>GR No</TableHead>
                       <TableHead>Student Name</TableHead>
                       <TableHead>Class</TableHead>
                       <TableHead>Date Admitted</TableHead>
@@ -137,7 +213,7 @@ export default async function AdmissionPage(props: { searchParams: Promise<{ [ke
                     ) : (
                       students.map(student => (
                         <TableRow key={student.id} className="hover:bg-slate-50/50">
-                          <TableCell className="font-medium text-muted-foreground">{student.enrollmentNo}</TableCell>
+                          <TableCell className="font-medium text-muted-foreground">{student.grNo}</TableCell>
                           <TableCell className="font-semibold">{student.firstName} {student.lastName}</TableCell>
                           <TableCell>{student.standard}-{student.division}</TableCell>
                           <TableCell>{student.createdAt.toLocaleDateString()}</TableCell>

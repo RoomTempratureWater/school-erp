@@ -109,7 +109,7 @@ export default async function StudentProfilePage(props: {
                 </Badge>
               </div>
               <p className="text-muted-foreground mt-1">
-                {student.enrollmentNo} • Class {student.standard}-
+                {student.grNo} • Class {student.standard}-
                 {student.division}
               </p>
             </div>
@@ -142,21 +142,34 @@ export default async function StudentProfilePage(props: {
             <CardContent>
               <form action={updateStudent} className="space-y-4">
                 <input type="hidden" name="id" value={student.id} />
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs font-medium">First Name</label>
+                    <Input name="firstName" defaultValue={student.firstName} required />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Middle Name</label>
+                    <Input name="middleName" defaultValue={student.middleName ?? ""} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Last Name</label>
+                    <Input name="lastName" defaultValue={student.lastName} required />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Date of Admission</label>
                     <Input
-                      name="firstName"
-                      defaultValue={student.firstName}
+                      name="dateOfAdmission"
+                      type="date"
+                      defaultValue={new Date(student.dateOfAdmission || student.createdAt).toISOString().split("T")[0]}
                       required
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium">Last Name</label>
+                    <label className="text-xs font-medium">Date of Leaving</label>
                     <Input
-                      name="lastName"
-                      defaultValue={student.lastName}
-                      required
+                      name="dateOfLeaving"
+                      type="date"
+                      defaultValue={student.dateOfLeaving ? new Date(student.dateOfLeaving).toISOString().split("T")[0] : ""}
                     />
                   </div>
                   <div className="space-y-1">
@@ -164,29 +177,17 @@ export default async function StudentProfilePage(props: {
                     <Input
                       name="dateOfBirth"
                       type="date"
-                      defaultValue={
-                        new Date(student.dateOfBirth)
-                          .toISOString()
-                          .split("T")[0]
-                      }
+                      defaultValue={new Date(student.dateOfBirth).toISOString().split("T")[0]}
                       required
                     />
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-medium">Standard</label>
-                    <Input
-                      name="standard"
-                      defaultValue={student.standard}
-                      required
-                    />
+                    <Input name="standard" defaultValue={student.standard} required />
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-medium">Division</label>
-                    <Input
-                      name="division"
-                      defaultValue={student.division}
-                      required
-                    />
+                    <Input name="division" defaultValue={student.division} required />
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-medium">Status</label>
@@ -201,22 +202,67 @@ export default async function StudentProfilePage(props: {
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium">
-                      Parent/Guardian
-                    </label>
-                    <Input
-                      name="parentName"
-                      defaultValue={student.parentName ?? ""}
-                    />
+                    <label className="text-xs font-medium">Aadhar No.</label>
+                    <Input name="aadharNo" defaultValue={student.aadharNo ?? ""} />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium">
-                      Contact Number
-                    </label>
-                    <Input
-                      name="contactNumber"
-                      defaultValue={student.contactNumber ?? ""}
-                    />
+                    <label className="text-xs font-medium">State Code</label>
+                    <Input name="stateCode" defaultValue={student.stateCode ?? ""} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">PEN No</label>
+                    <Input name="penNo" defaultValue={student.penNo ?? ""} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Appar ID</label>
+                    <Input name="apparId" defaultValue={student.apparId ?? ""} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Blood Group</label>
+                    <Input name="bloodGroup" defaultValue={student.bloodGroup ?? ""} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Mother Tongue</label>
+                    <Input name="motherTongue" defaultValue={student.motherTongue ?? ""} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Religion</label>
+                    <Input name="religion" defaultValue={student.religion ?? ""} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Caste</label>
+                    <Input name="caste" defaultValue={student.caste ?? ""} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Category</label>
+                    <Input name="category" defaultValue={student.category ?? ""} />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="text-xs font-medium">Birth Place (City, State)</label>
+                    <div className="flex gap-2">
+                      <Input name="birthCity" placeholder="City" defaultValue={student.birthCity ?? ""} />
+                      <Input name="birthState" placeholder="State" defaultValue={student.birthState ?? ""} />
+                    </div>
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="text-xs font-medium">Current Address</label>
+                    <Input name="currentAddress" defaultValue={student.currentAddress ?? ""} />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="text-xs font-medium">Father's Name</label>
+                    <Input name="fatherName" defaultValue={student.fatherName ?? ""} />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="text-xs font-medium">Mother's Name</label>
+                    <Input name="motherName" defaultValue={student.motherName ?? ""} />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="text-xs font-medium">Mobile Number</label>
+                    <Input name="mobileNumber" defaultValue={student.mobileNumber ?? ""} />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="text-xs font-medium">Contact Email</label>
+                    <Input name="contactEmail" type="email" defaultValue={student.contactEmail ?? ""} />
                   </div>
                 </div>
                 <Button type="submit">Save Changes</Button>
@@ -234,17 +280,79 @@ export default async function StudentProfilePage(props: {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm font-medium">Date of Birth</p>
-                <p className="text-sm text-foreground font-medium mt-0.5">
-                  {new Date(student.dateOfBirth).toLocaleDateString()}
-                </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium">Date of Birth</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {new Date(student.dateOfBirth).toLocaleDateString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Blood Group</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.bloodGroup || "—"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium">Date Joined</p>
-                <p className="text-sm text-foreground font-medium mt-0.5">
-                  {new Date(student.createdAt).toLocaleDateString()}
-                </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium">Mother Tongue</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.motherTongue || "—"}
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium">Date of Admission</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.dateOfAdmission ? new Date(student.dateOfAdmission).toLocaleDateString() : "—"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Date of Leaving</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.dateOfLeaving ? new Date(student.dateOfLeaving).toLocaleDateString() : "—"}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Identity & Demographics
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium">Aadhar No</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.aadharNo || "—"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">PEN No</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.penNo || "—"}
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium">Religion</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.religion || "—"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Caste / Category</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.caste || "—"} / {student.category || "—"}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -256,17 +364,57 @@ export default async function StudentProfilePage(props: {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm font-medium">Parent/Guardian</p>
-                <p className="text-sm text-foreground font-medium mt-0.5">
-                  {student.parentName || "N/A"}
-                </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium">Father</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.fatherName || "—"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Mother</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.motherName || "—"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium">Contact Number</p>
-                <p className="text-sm text-foreground font-medium mt-0.5">
-                  {student.contactNumber || "N/A"}
-                </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium">Mobile</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.mobileNumber || "—"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Email</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5 truncate" title={student.contactEmail || ""}>
+                    {student.contactEmail || "—"}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm md:col-span-2 lg:col-span-2">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Address & Origins
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium">Current Address</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {student.currentAddress || "—"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Birth Place</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {[student.birthCity, student.birthState].filter(Boolean).join(", ") || "—"}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

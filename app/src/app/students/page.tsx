@@ -18,7 +18,7 @@ export default async function StudentsPage(props: { searchParams: Promise<{ [key
       OR: search ? [
         { firstName: { contains: search, mode: 'insensitive' } },
         { lastName: { contains: search, mode: 'insensitive' } },
-        { enrollmentNo: { contains: search, mode: 'insensitive' } },
+        { grNo: { contains: search, mode: 'insensitive' } },
       ] : undefined,
       standard: standard ? standard : undefined,
       division: division ? division : undefined,
@@ -55,7 +55,7 @@ export default async function StudentsPage(props: { searchParams: Promise<{ [key
         <form action={searchAction} className="bg-card border rounded-lg p-4 flex flex-col md:flex-row gap-4 items-end shadow-sm transiton-all">
           <div className="space-y-1 flex-1 w-full">
             <label className="text-xs font-medium text-muted-foreground">Search</label>
-            <Input name="q" placeholder="Name or Enrollment No" defaultValue={search} className="bg-white" />
+            <Input name="q" placeholder="Name or GR No" defaultValue={search} className="bg-white" />
           </div>
           <div className="space-y-1 w-full md:w-48">
             <label className="text-xs font-medium text-muted-foreground">Standard</label>
@@ -71,38 +71,42 @@ export default async function StudentsPage(props: { searchParams: Promise<{ [key
           </div>
         </form>
 
-        <div className="bg-card border rounded-lg overflow-hidden shadow-sm">
-          <Table>
+        <div className="bg-card border rounded-lg overflow-x-auto shadow-sm">
+          <Table className="whitespace-nowrap min-w-max">
             <TableHeader className="bg-slate-50/80">
               <TableRow>
-                <TableHead>Enrollment No</TableHead>
+                <TableHead>GR No</TableHead>
                 <TableHead>Student Name</TableHead>
-                <TableHead>Class</TableHead>
-                <TableHead>Parent Name</TableHead>
-                <TableHead>Contact</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead>Class</TableHead>
+                <TableHead>PEN No</TableHead>
+                <TableHead>Appar ID</TableHead>
+                <TableHead>Mobile</TableHead>
+                <TableHead>Address</TableHead>
+                <TableHead className="text-right sticky right-0 bg-slate-50/90 shadow-[-10px_0_15px_-10px_rgba(0,0,0,0.1)]">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {students.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No students found.</TableCell>
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">No students found.</TableCell>
                 </TableRow>
               ) : (
                 students.map(student => (
                   <TableRow key={student.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-medium text-muted-foreground">{student.enrollmentNo}</TableCell>
-                    <TableCell className="font-semibold">{student.firstName} {student.lastName}</TableCell>
-                    <TableCell>{student.standard}-{student.division}</TableCell>
-                    <TableCell>{student.parentName}</TableCell>
-                    <TableCell>{student.contactNumber}</TableCell>
+                    <TableCell className="font-medium text-muted-foreground">{student.grNo}</TableCell>
+                    <TableCell className="font-semibold">{student.firstName} {student.middleName ? student.middleName + ' ' : ''}{student.lastName}</TableCell>
                     <TableCell>
                       <Badge variant={student.status === "ACTIVE" ? "default" : "secondary"}>
                         {student.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell>{student.standard}-{student.division}</TableCell>
+                    <TableCell>{student.penNo || "—"}</TableCell>
+                    <TableCell>{student.apparId || "—"}</TableCell>
+                    <TableCell>{student.mobileNumber || "—"}</TableCell>
+                    <TableCell className="max-w-[200px] truncate" title={student.currentAddress || ""}>{student.currentAddress || "—"}</TableCell>
+                    <TableCell className="text-right sticky right-0 bg-white shadow-[-10px_0_15px_-10px_rgba(0,0,0,0.1)]">
                       <Link href={`/students/${student.id}`}>
                         <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">View Profile</Button>
                       </Link>

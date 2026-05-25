@@ -36,8 +36,8 @@ export default async function PrintAdmissionReceipt(props: { params: Promise<{ i
             <h2 className="text-xl font-bold mb-4 bg-stone-100 p-2 print:bg-stone-100">Student Particulars</h2>
             <div className="grid grid-cols-2 gap-y-4 gap-x-8 px-2">
                <div>
-                 <p className="text-xs text-stone-500 uppercase font-semibold">Enrollment Number</p>
-                 <p className="text-lg font-bold">{student.enrollmentNo}</p>
+                 <p className="text-xs text-stone-500 uppercase font-semibold">GR number</p>
+                 <p className="text-lg font-bold">{student.grNo}</p>
                </div>
                <div>
                  <p className="text-xs text-stone-500 uppercase font-semibold">Full Name</p>
@@ -59,11 +59,11 @@ export default async function PrintAdmissionReceipt(props: { params: Promise<{ i
             <div className="grid grid-cols-2 gap-y-4 gap-x-8 px-2">
                <div>
                  <p className="text-xs text-stone-500 uppercase font-semibold">Parent / Guardian</p>
-                 <p className="text-base">{student.parentName || "Not Provided"}</p>
+                 <p className="text-base">{student.fatherName || "Not Provided"}</p>
                </div>
                <div>
                  <p className="text-xs text-stone-500 uppercase font-semibold">Primary Contact</p>
-                 <p className="text-base">{student.contactNumber || "Not Provided"}</p>
+                 <p className="text-base">{student.mobileNumber || "Not Provided"}</p>
                </div>
                <div>
                  <p className="text-xs text-stone-500 uppercase font-semibold">Admission Date</p>

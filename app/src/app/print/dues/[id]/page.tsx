@@ -58,7 +58,7 @@ export default async function PrintDuesReceipt(props: { params: Promise<{ id: st
           <div className="mb-4">
               <div className="flex border-b border-gray-100 pb-1">
                   <span className="w-28 font-bold text-[11px] uppercase text-gray-500">Student Name:</span>
-                  <span className="data-text text-md">{student.firstName} {student.lastName} (ENR: {student.enrollmentNo})</span>
+                  <span className="data-text text-md">{student.firstName} {student.lastName} (ENR: {student.grNo})</span>
               </div>
           </div>
 
