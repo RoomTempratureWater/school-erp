@@ -1,55 +1,65 @@
 -- CreateEnum
-CREATE TYPE "PromotionStatus" AS ENUM ('PROMOTED', 'DETAINED', 'RE_EXAM');
+DO $$ BEGIN
+    CREATE TYPE "PromotionStatus" AS ENUM ('PROMOTED', 'DETAINED', 'RE_EXAM');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- DropIndex
-DROP INDEX "students_enrollmentNo_key";
+DROP INDEX IF EXISTS "students_enrollmentNo_key";
 
 -- AlterTable
-ALTER TABLE "marks" ADD COLUMN     "graceMarks" DOUBLE PRECISION DEFAULT 0;
+ALTER TABLE "marks" ADD COLUMN IF NOT EXISTS "graceMarks" DOUBLE PRECISION DEFAULT 0;
 
 -- AlterTable
-ALTER TABLE "staff" ADD COLUMN     "dateOfJoining" TIMESTAMP(3),
-ADD COLUMN     "dateOfLeaving" TIMESTAMP(3),
-ADD COLUMN     "memos" JSONB,
-ADD COLUMN     "reasonForLeaving" TEXT;
+ALTER TABLE "staff" ADD COLUMN IF NOT EXISTS "dateOfJoining" TIMESTAMP(3),
+ADD COLUMN IF NOT EXISTS "dateOfLeaving" TIMESTAMP(3),
+ADD COLUMN IF NOT EXISTS "memos" JSONB,
+ADD COLUMN IF NOT EXISTS "reasonForLeaving" TEXT;
 
 -- AlterTable
-ALTER TABLE "student_promotions" ADD COLUMN     "status" "PromotionStatus" NOT NULL DEFAULT 'PROMOTED';
+ALTER TABLE "student_promotions" ADD COLUMN IF NOT EXISTS "status" "PromotionStatus" NOT NULL DEFAULT 'PROMOTED';
 
 -- AlterTable
-ALTER TABLE "students" DROP COLUMN "contactNumber",
-DROP COLUMN "parentName",
-ADD COLUMN     "aadharNo" TEXT,
-ADD COLUMN     "alternateMobileNumber" TEXT,
-ADD COLUMN     "apparId" TEXT,
-ADD COLUMN     "birthCity" TEXT,
-ADD COLUMN     "birthCountry" TEXT,
-ADD COLUMN     "birthDistrict" TEXT,
-ADD COLUMN     "birthState" TEXT,
-ADD COLUMN     "birthTaluka" TEXT,
-ADD COLUMN     "bloodGroup" TEXT,
-ADD COLUMN     "caste" TEXT,
-ADD COLUMN     "category" TEXT,
-ADD COLUMN     "contactEmail" TEXT,
-ADD COLUMN     "currentAddress" TEXT,
-ADD COLUMN     "date_of_admission" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "date_of_leaving" TIMESTAMP(3),
-ADD COLUMN     "fatherName" TEXT,
-ADD COLUMN     "guardianName" TEXT,
-ADD COLUMN     "middleName" TEXT,
-ADD COLUMN     "minorityGroup" TEXT,
-ADD COLUMN     "mobileNumber" TEXT,
-ADD COLUMN     "motherName" TEXT,
-ADD COLUMN     "motherTongue" TEXT,
-ADD COLUMN     "penNo" TEXT,
-ADD COLUMN     "pinCode" TEXT,
-ADD COLUMN     "religion" TEXT,
-ADD COLUMN     "stateCode" TEXT;
+ALTER TABLE "students" DROP COLUMN IF EXISTS "contactNumber",
+DROP COLUMN IF EXISTS "parentName",
+ADD COLUMN IF NOT EXISTS "aadharNo" TEXT,
+ADD COLUMN IF NOT EXISTS "alternateMobileNumber" TEXT,
+ADD COLUMN IF NOT EXISTS "apparId" TEXT,
+ADD COLUMN IF NOT EXISTS "birthCity" TEXT,
+ADD COLUMN IF NOT EXISTS "birthCountry" TEXT,
+ADD COLUMN IF NOT EXISTS "birthDistrict" TEXT,
+ADD COLUMN IF NOT EXISTS "birthState" TEXT,
+ADD COLUMN IF NOT EXISTS "birthTaluka" TEXT,
+ADD COLUMN IF NOT EXISTS "bloodGroup" TEXT,
+ADD COLUMN IF NOT EXISTS "caste" TEXT,
+ADD COLUMN IF NOT EXISTS "category" TEXT,
+ADD COLUMN IF NOT EXISTS "contactEmail" TEXT,
+ADD COLUMN IF NOT EXISTS "currentAddress" TEXT,
+ADD COLUMN IF NOT EXISTS "date_of_admission" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN IF NOT EXISTS "date_of_leaving" TIMESTAMP(3),
+ADD COLUMN IF NOT EXISTS "fatherName" TEXT,
+ADD COLUMN IF NOT EXISTS "guardianName" TEXT,
+ADD COLUMN IF NOT EXISTS "middleName" TEXT,
+ADD COLUMN IF NOT EXISTS "minorityGroup" TEXT,
+ADD COLUMN IF NOT EXISTS "mobileNumber" TEXT,
+ADD COLUMN IF NOT EXISTS "motherName" TEXT,
+ADD COLUMN IF NOT EXISTS "motherTongue" TEXT,
+ADD COLUMN IF NOT EXISTS "penNo" TEXT,
+ADD COLUMN IF NOT EXISTS "pinCode" TEXT,
+ADD COLUMN IF NOT EXISTS "religion" TEXT,
+ADD COLUMN IF NOT EXISTS "stateCode" TEXT;
 
-ALTER TABLE "students" RENAME COLUMN "enrollmentNo" TO "grNo";
+DO $$ BEGIN
+    IF EXISTS(SELECT *
+    FROM information_schema.columns
+    WHERE table_name='students' and column_name='enrollmentNo') THEN
+        ALTER TABLE "students" RENAME COLUMN "enrollmentNo" TO "grNo";
+    END IF;
+END $$;
 
 -- CreateIndex
-CREATE UNIQUE INDEX "students_grNo_key" ON "students"("grNo");
+CREATE UNIQUE INDEX IF NOT EXISTS "students_grNo_key" ON "students"("grNo");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "students_aadharNo_key" ON "students"("aadharNo");
+CREATE UNIQUE INDEX IF NOT EXISTS "students_aadharNo_key" ON "students"("aadharNo");
