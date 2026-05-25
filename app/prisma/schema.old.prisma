@@ -56,11 +56,8 @@ model Student {
   id                    Int           @id @default(autoincrement())
   grNo                  String        @unique
   firstName             String
-  middleName            String?
   lastName              String
   dateOfBirth           DateTime
-  dateOfAdmission       DateTime  @default(now()) @map("date_of_admission")
-  dateOfLeaving         DateTime? @map("date_of_leaving")
   aadharNo              String?       @unique
   stateCode             String?
   penNo                 String?
