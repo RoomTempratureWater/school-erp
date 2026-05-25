@@ -40,7 +40,7 @@ export default function PaymentForm({ academicYears, categories, currentYearId, 
       <div className="space-y-1">
         <label className="text-xs font-medium text-foreground">Student</label>
         <StudentSearchDropdown
-          name="enrollmentNo"
+          name="grNo"
           placeholder="Search by name or enrollment…"
           required
         />

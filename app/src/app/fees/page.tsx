@@ -66,8 +66,8 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
         OR: [
           { firstName: { contains: search, mode: 'insensitive' } },
           { lastName: { contains: search, mode: 'insensitive' } },
-          { enrollmentNo: { contains: search, mode: 'insensitive' } },
-          { contactNumber: { contains: search, mode: 'insensitive' } },
+          { grNo: { contains: search, mode: 'insensitive' } },
+          { mobileNumber: { contains: search, mode: 'insensitive' } },
         ]
       }
     };
@@ -115,7 +115,7 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
   const csvData = transactions.map(t => ({
     TransactionID: t.id,
     Date: t.paymentDate.toLocaleDateString(),
-    EnrollmentNo: t.studentFee.student.enrollmentNo,
+    GrNo: t.studentFee.student.grNo,
     StudentName: `${t.studentFee.student.firstName} ${t.studentFee.student.lastName}`,
     FeeCategory: t.studentFee.feeCategory.name,
     AcademicYear: t.studentFee.feeCategory.academicYear.name,
@@ -146,7 +146,7 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
     pendingWhere.OR = [
       { firstName: { contains: duesSearchParam, mode: 'insensitive' } },
       { lastName: { contains: duesSearchParam, mode: 'insensitive' } },
-      { enrollmentNo: { contains: duesSearchParam, mode: 'insensitive' } },
+      { grNo: { contains: duesSearchParam, mode: 'insensitive' } },
     ];
   }
 
@@ -197,7 +197,7 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
   });
 
   const duesCsvData = pendingBalances.map(pb => ({
-    EnrollmentNo: pb.student.enrollmentNo,
+    GrNo: pb.student.grNo,
     StudentName: `${pb.student.firstName} ${pb.student.lastName}`,
     Class: `${pb.fee.studentStandard || pb.student.standard}-${pb.fee.studentDivision || pb.student.division}`,
     AcademicYear: pb.fee.feeCategory.academicYear.name,
@@ -263,7 +263,7 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
                       <input type="hidden" name="yearId" value={activeYearId ? String(activeYearId) : ""} />
                       <div className="space-y-1 flex-1 min-w-[140px]">
                         <label className="text-xs font-medium text-muted-foreground">Search Student/Roll</label>
-                        <Input name="q" placeholder="Name or Enrollment No" defaultValue={search} className="bg-white" />
+                        <Input name="q" placeholder="Name or GR No" defaultValue={search} className="bg-white" />
                       </div>
                       <div className="space-y-1 w-full sm:w-28 shrink-0">
                         <label className="text-xs font-medium text-muted-foreground">Method</label>
@@ -322,7 +322,7 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
                                <TableCell>
                                   <Link href={`/students/${t.studentFee.student.id}`} className="hover:underline">
                                     <div className="font-semibold text-primary">{t.studentFee.student.firstName} {t.studentFee.student.lastName}</div>
-                                    <div className="text-xs text-muted-foreground">{t.studentFee.student.enrollmentNo}</div>
+                                    <div className="text-xs text-muted-foreground">{t.studentFee.student.grNo}</div>
                                   </Link>
                                </TableCell>
                                <TableCell className="text-muted-foreground font-medium">{t.studentFee.feeCategory.name}</TableCell>
@@ -370,7 +370,7 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
                       
                       <div className="space-y-1 flex-1 min-w-[140px]">
                         <label className="text-xs font-medium text-muted-foreground">Search Student/Roll</label>
-                        <Input name="q" placeholder="Name or Enrollment No" defaultValue={duesSearchParam} className="bg-white" />
+                        <Input name="q" placeholder="Name or GR No" defaultValue={duesSearchParam} className="bg-white" />
                       </div>
                       <div className="space-y-1 w-full sm:w-36 shrink-0">
                         <label className="text-xs font-medium text-muted-foreground">From Date</label>
@@ -415,7 +415,7 @@ export default async function FeesPage(props: { searchParams: Promise<{ [key: st
                                <TableCell>
                                   <Link href={`/students/${pb.student.id}`} className="hover:underline">
                                     <div className="font-semibold text-primary">{pb.student.firstName} {pb.student.lastName}</div>
-                                    <div className="text-xs text-muted-foreground">{pb.student.enrollmentNo}</div>
+                                    <div className="text-xs text-muted-foreground">{pb.student.grNo}</div>
                                   </Link>
                                </TableCell>
                                <TableCell>{pb.fee.studentStandard || pb.student.standard}-{pb.fee.studentDivision || pb.student.division}</TableCell>

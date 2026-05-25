@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 
 type StudentWithExamResults = {
   id: number;
-  enrollmentNo: string;
+  grNo: string;
   firstName: string;
   lastName: string;
   standard: string;
@@ -187,7 +187,7 @@ export default function PromotionTable({
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="text-xs text-muted-foreground font-mono">{s.enrollmentNo}</span>
+                        <span className="text-xs text-muted-foreground font-mono">{s.grNo}</span>
                         <span className="font-semibold text-slate-900">{s.firstName} {s.lastName}</span>
                       </div>
                     </TableCell>

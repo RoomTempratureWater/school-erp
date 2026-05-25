@@ -3,13 +3,13 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function processPayment(formData: FormData) {
-  const enrollmentNo = formData.get("enrollmentNo") as string;
+  const grNo = formData.get("grNo") as string;
   const feeCategoryId = parseInt(formData.get("feeCategoryId") as string, 10);
   const amount = parseFloat(formData.get("amount") as string);
   const paymentMethod = formData.get("paymentMethod") as any;
   const reference = formData.get("reference") as string;
 
-  const student = await prisma.student.findUnique({ where: { enrollmentNo } });
+  const student = await prisma.student.findUnique({ where: { grNo } });
   if (!student) throw new Error("Student not found");
 
   let studentFee = await prisma.studentFee.findFirst({

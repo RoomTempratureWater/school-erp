@@ -19,15 +19,15 @@ export default function CreateCertificateDialog() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const enrollmentNo = formData.get('enrollmentNo') as string;
+      const grNo = formData.get('grNo') as string;
       const type = formData.get('type') as string;
 
-      if (!enrollmentNo) {
+      if (!grNo) {
         throw new Error('Please select a student');
       }
 
       // Call server action
-      const certificate = await createCertificate({ enrollmentNo, type: type as any });
+      const certificate = await createCertificate({ grNo, type: type as any });
       
       setOpen(false);
       
@@ -65,7 +65,7 @@ export default function CreateCertificateDialog() {
               
               <div className="space-y-1">
                 <label className="text-sm font-medium text-slate-700">Student</label>
-                <StudentSearchDropdown name="enrollmentNo" required />
+                <StudentSearchDropdown name="grNo" required />
               </div>
 
               <div className="space-y-1">
