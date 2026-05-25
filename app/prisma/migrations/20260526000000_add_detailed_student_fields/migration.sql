@@ -18,7 +18,6 @@ ALTER TABLE "student_promotions" ADD COLUMN     "status" "PromotionStatus" NOT N
 
 -- AlterTable
 ALTER TABLE "students" DROP COLUMN "contactNumber",
-DROP COLUMN "enrollmentNo",
 DROP COLUMN "parentName",
 ADD COLUMN     "aadharNo" TEXT,
 ADD COLUMN     "alternateMobileNumber" TEXT,
@@ -36,7 +35,6 @@ ADD COLUMN     "currentAddress" TEXT,
 ADD COLUMN     "date_of_admission" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN     "date_of_leaving" TIMESTAMP(3),
 ADD COLUMN     "fatherName" TEXT,
-ADD COLUMN     "grNo" TEXT NOT NULL,
 ADD COLUMN     "guardianName" TEXT,
 ADD COLUMN     "middleName" TEXT,
 ADD COLUMN     "minorityGroup" TEXT,
@@ -48,9 +46,10 @@ ADD COLUMN     "pinCode" TEXT,
 ADD COLUMN     "religion" TEXT,
 ADD COLUMN     "stateCode" TEXT;
 
+ALTER TABLE "students" RENAME COLUMN "enrollmentNo" TO "grNo";
+
 -- CreateIndex
 CREATE UNIQUE INDEX "students_grNo_key" ON "students"("grNo");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "students_aadharNo_key" ON "students"("aadharNo");
-
