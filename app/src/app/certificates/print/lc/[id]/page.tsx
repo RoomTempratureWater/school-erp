@@ -118,7 +118,7 @@ export default async function PrintLeavingCertificatePage(props: { params: Promi
 
           <div className="grid grid-cols-3 gap-2 mb-2 border-b border-gray-100 pb-1">
               <div><span className="label">Sr No:</span> <span className="filled-data ml-1">{cert.id}</span></div>
-              <div><span className="label">Reg No:</span> <span className="filled-data ml-1">{student.enrollmentNo}</span></div>
+              <div><span className="label">Reg No:</span> <span className="filled-data ml-1">{student.grNo}</span></div>
               <div><span className="label">Aadhar:</span> <span className="filled-data ml-1">-----</span></div>
           </div>
 
@@ -131,7 +131,7 @@ export default async function PrintLeavingCertificatePage(props: { params: Promi
               <div><p className="label text-[8px] uppercase">First Name</p><p className="filled-data">{student.firstName}</p></div>
               <div><p className="label text-[8px] uppercase">Middle Name</p><p className="filled-data">-----</p></div>
               <div><p className="label text-[8px] uppercase">Last Name</p><p className="filled-data">{student.lastName}</p></div>
-              <div><p className="label text-[8px] uppercase">Mother Name</p><p className="filled-data">{student.parentName || '-----'}</p></div>
+              <div><p className="label text-[8px] uppercase">Mother Name</p><p className="filled-data">{student.fatherName || '-----'}</p></div>
           </div>
 
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 mb-2">

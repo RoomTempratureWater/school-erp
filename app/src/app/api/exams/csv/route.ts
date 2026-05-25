@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       division: division,
       status: "ACTIVE"
     },
-    orderBy: { enrollmentNo: 'asc' }
+    orderBy: { grNo: 'asc' }
   });
 
   const subjects = exam.subjects as Array<{ name: string; maxMarks: string | number }>;
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
 
   const data = students.map(student => {
     const row: any = {
-      EnrollmentNo: student.enrollmentNo,
+      GrNo: student.grNo,
       FirstName: student.firstName,
       LastName: student.lastName,
     };

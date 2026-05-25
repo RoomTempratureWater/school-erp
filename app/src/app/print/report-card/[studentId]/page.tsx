@@ -105,13 +105,13 @@ export default async function ReportCardPrintPage(props: {
 
       <div className="grid grid-cols-2 gap-4 border-2 border-slate-200 p-6 rounded-lg mb-8 bg-slate-50/50">
         <div className="space-y-3 text-sm">
-          <div className="grid grid-cols-[120px_1fr]"><span className="font-bold text-slate-500 uppercase">Enrollment No:</span> <span className="font-semibold">{student.enrollmentNo}</span></div>
+          <div className="grid grid-cols-[120px_1fr]"><span className="font-bold text-slate-500 uppercase">GR No:</span> <span className="font-semibold">{student.grNo}</span></div>
           <div className="grid grid-cols-[120px_1fr]"><span className="font-bold text-slate-500 uppercase">Student Name:</span> <span className="font-bold text-base">{student.firstName} {student.lastName}</span></div>
           <div className="grid grid-cols-[120px_1fr]"><span className="font-bold text-slate-500 uppercase">Date of Birth:</span> <span className="font-medium">{student.dateOfBirth.toLocaleDateString()}</span></div>
         </div>
         <div className="space-y-3 text-sm">
           <div className="grid grid-cols-[120px_1fr]"><span className="font-bold text-slate-500 uppercase">Class/Div:</span> <span className="font-semibold">{student.standard} - {student.division}</span></div>
-          <div className="grid grid-cols-[120px_1fr]"><span className="font-bold text-slate-500 uppercase">Father's Name:</span> <span className="font-medium">{student.parentName || '--'}</span></div>
+          <div className="grid grid-cols-[120px_1fr]"><span className="font-bold text-slate-500 uppercase">Father's Name:</span> <span className="font-medium">{student.fatherName || '--'}</span></div>
           <div className="grid grid-cols-[120px_1fr]"><span className="font-bold text-slate-500 uppercase">Date Issued:</span> <span className="font-medium">{new Date().toLocaleDateString()}</span></div>
         </div>
       </div>

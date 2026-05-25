@@ -13,13 +13,13 @@ export async function GET(req: NextRequest) {
       OR: [
         { firstName: { contains: q, mode: "insensitive" } },
         { lastName: { contains: q, mode: "insensitive" } },
-        { enrollmentNo: { contains: q, mode: "insensitive" } },
-        { contactNumber: { contains: q, mode: "insensitive" } },
+        { grNo: { contains: q, mode: "insensitive" } },
+        { mobileNumber: { contains: q, mode: "insensitive" } },
       ],
     },
     select: {
       id: true,
-      enrollmentNo: true,
+      grNo: true,
       firstName: true,
       lastName: true,
       standard: true,
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 
   const results = students.map((s) => ({
     id: s.id,
-    enrollmentNo: s.enrollmentNo,
+    grNo: s.grNo,
     label: `${s.firstName} ${s.lastName} — ${s.standard} ${s.division}`,
     firstName: s.firstName,
     lastName: s.lastName,

@@ -68,7 +68,7 @@ export default async function ExamResultsPage(props: { searchParams: Promise<{ [
       studentWhere.OR = [
         { firstName: { contains: search, mode: 'insensitive' } },
         { lastName: { contains: search, mode: 'insensitive' } },
-        { enrollmentNo: { contains: search, mode: 'insensitive' } }
+        { grNo: { contains: search, mode: 'insensitive' } }
       ];
     }
 
@@ -79,7 +79,7 @@ export default async function ExamResultsPage(props: { searchParams: Promise<{ [
           where: { examId: activeExam.id }
         }
       },
-      orderBy: { enrollmentNo: 'asc' }
+      orderBy: { grNo: 'asc' }
     });
 
     subjects = activeExam.subjects as Array<{ name: string; maxMarks: number | string }>;
@@ -148,7 +148,7 @@ export default async function ExamResultsPage(props: { searchParams: Promise<{ [
             </div>
             <div className="space-y-1 flex-1 min-w-[140px]">
               <label className="text-xs font-medium text-muted-foreground">Search Student</label>
-              <Input name="q" placeholder="Name or Enrollment No" defaultValue={search} />
+              <Input name="q" placeholder="Name or GR No" defaultValue={search} />
             </div>
             <div className="flex gap-2 w-full sm:w-auto">
               <Button type="submit">Filter</Button>
@@ -167,7 +167,7 @@ export default async function ExamResultsPage(props: { searchParams: Promise<{ [
              <Table>
                <TableHeader className="bg-slate-50/80">
                  <TableRow>
-                   <TableHead>Enrollment No</TableHead>
+                   <TableHead>GR No</TableHead>
                    <TableHead>Student Name</TableHead>
                    <TableHead>Class</TableHead>
                    <TableHead>Total Marks</TableHead>
@@ -203,7 +203,7 @@ export default async function ExamResultsPage(props: { searchParams: Promise<{ [
                      
                      return (
                        <TableRow key={student.id} className="hover:bg-slate-50/50">
-                          <TableCell className="font-medium text-muted-foreground text-xs">{student.enrollmentNo}</TableCell>
+                          <TableCell className="font-medium text-muted-foreground text-xs">{student.grNo}</TableCell>
                           <TableCell className="font-semibold">{student.firstName} {student.lastName}</TableCell>
                           <TableCell>{student.standard}-{student.division}</TableCell>
                           <TableCell>

@@ -47,9 +47,9 @@ export async function getCertificates(filters?: { name?: string; standard?: stri
   return certificates;
 }
 
-export async function createCertificate(data: { enrollmentNo: string; type: CertificateType }) {
+export async function createCertificate(data: { grNo: string; type: CertificateType }) {
   const student = await prisma.student.findUnique({
-    where: { enrollmentNo: data.enrollmentNo }
+    where: { grNo: data.grNo }
   });
 
   if (!student) {
@@ -85,7 +85,7 @@ export async function getStudentsForDropdown() {
       lastName: true,
       standard: true,
       division: true,
-      enrollmentNo: true,
+      grNo: true,
     },
     orderBy: [
       { standard: 'asc' },

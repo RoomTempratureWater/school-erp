@@ -92,7 +92,7 @@ export default async function CertificatesPage(props: { searchParams: Promise<{ 
                     <TableRow key={cert.id}>
                       <TableCell className="font-medium">
                         {cert.student.firstName} {cert.student.lastName}
-                        <div className="text-[10px] text-muted-foreground">{cert.student.enrollmentNo}</div>
+                        <div className="text-[10px] text-muted-foreground">{cert.student.grNo}</div>
                       </TableCell>
                       <TableCell>
                         <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-800">

@@ -4,48 +4,57 @@ import "dotenv/config";
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.student.upsert({
-    where: { enrollmentNo: 'ENR-2023-001' },
+  await prisma.internalUser.upsert({
+    where: { userid: 'admin' },
     update: {},
     create: {
-      enrollmentNo: 'ENR-2023-001',
+      userid: 'admin',
+      password: 'password'
+    }
+  });
+
+  await prisma.student.upsert({
+    where: { grNo: 'ENR-2023-001' },
+    update: {},
+    create: {
+      grNo: 'ENR-2023-001',
       firstName: 'John',
       lastName: 'Doe',
       dateOfBirth: new Date('2005-04-12'),
       standard: '10',
       division: 'A',
-      parentName: 'Michael Doe',
-      contactNumber: '555-0101',
+      fatherName: 'Michael Doe',
+      mobileNumber: '555-0101',
     },
   })
   
   await prisma.student.upsert({
-    where: { enrollmentNo: 'ENR-2023-002' },
+    where: { grNo: 'ENR-2023-002' },
     update: {},
     create: {
-      enrollmentNo: 'ENR-2023-002',
+      grNo: 'ENR-2023-002',
       firstName: 'Jane',
       lastName: 'Smith',
       dateOfBirth: new Date('2006-08-22'),
       standard: '9',
       division: 'B',
-      parentName: 'Sarah Smith',
-      contactNumber: '555-0102',
+      fatherName: 'Sarah Smith',
+      mobileNumber: '555-0102',
     },
   })
 
   await prisma.student.upsert({
-    where: { enrollmentNo: 'ENR-2023-003' },
+    where: { grNo: 'ENR-2023-003' },
     update: {},
     create: {
-      enrollmentNo: 'ENR-2023-003',
+      grNo: 'ENR-2023-003',
       firstName: 'Rahul',
       lastName: 'Sharma',
       dateOfBirth: new Date('2005-11-05'),
       standard: '10',
       division: 'A',
-      parentName: 'Rajesh Sharma',
-      contactNumber: '555-0103',
+      fatherName: 'Rajesh Sharma',
+      mobileNumber: '555-0103',
     },
   })
 

@@ -53,19 +53,41 @@ enum PromotionStatus {
 // ==========================================
 
 model Student {
-  id             Int           @id @default(autoincrement())
-  enrollmentNo   String        @unique
-  firstName      String
-  lastName       String
-  dateOfBirth    DateTime
-  standard       String
-  division       String
-  status         StudentStatus @default(ACTIVE)
-  parentName     String?
-  contactNumber  String?
-  profilePicture String? // MinIO object key
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id                    Int           @id @default(autoincrement())
+  grNo                  String        @unique
+  firstName             String
+  middleName            String?
+  lastName              String
+  dateOfBirth           DateTime
+  aadharNo              String?       @unique
+  stateCode             String?
+  penNo                 String?
+  apparId               String?
+  motherTongue          String?
+  bloodGroup            String?
+  religion              String?
+  caste                 String?
+  category              String?
+  minorityGroup         String?
+  birthCity             String?
+  birthTaluka           String?
+  birthDistrict         String?
+  birthState            String?
+  birthCountry          String?
+  currentAddress        String?
+  pinCode               String?
+  fatherName            String?
+  motherName            String?
+  guardianName          String?
+  mobileNumber          String?
+  alternateMobileNumber String?
+  contactEmail          String?
+  standard              String
+  division              String
+  status                StudentStatus @default(ACTIVE)
+  profilePicture        String?       // MinIO object key
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 
   fees         StudentFee[]
   certificates Certificate[]

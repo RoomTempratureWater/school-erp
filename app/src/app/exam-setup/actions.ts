@@ -54,10 +54,10 @@ export async function parseAndUploadMarks(formData: FormData) {
 
   await prisma.$transaction(async (tx) => {
     for (const row of data) {
-      const enrollmentNo = row["EnrollmentNo"];
-      if (!enrollmentNo) continue;
+      const grNo = row["GrNo"];
+      if (!grNo) continue;
 
-      const student = await tx.student.findUnique({ where: { enrollmentNo } });
+      const student = await tx.student.findUnique({ where: { grNo } });
       if (!student) {
         // Log skip or error. For now, continue
         continue;

@@ -10,47 +10,47 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   await prisma.student.upsert({
-    where: { enrollmentNo: 'ENR-2023-001' },
+    where: { grNo: 'ENR-2023-001' },
     update: {},
     create: {
-      enrollmentNo: 'ENR-2023-001',
+      grNo: 'ENR-2023-001',
       firstName: 'John',
       lastName: 'Doe',
       dateOfBirth: new Date('2005-04-12'),
       standard: '10',
       division: 'A',
-      parentName: 'Michael Doe',
-      contactNumber: '555-0101',
+      fatherName: 'Michael Doe',
+      mobileNumber: '555-0101',
     },
   });
   
   await prisma.student.upsert({
-    where: { enrollmentNo: 'ENR-2023-002' },
+    where: { grNo: 'ENR-2023-002' },
     update: {},
     create: {
-      enrollmentNo: 'ENR-2023-002',
+      grNo: 'ENR-2023-002',
       firstName: 'Jane',
       lastName: 'Smith',
       dateOfBirth: new Date('2006-08-22'),
       standard: '9',
       division: 'B',
-      parentName: 'Sarah Smith',
-      contactNumber: '555-0102',
+      fatherName: 'Sarah Smith',
+      mobileNumber: '555-0102',
     },
   });
 
   const studentAbizer = await prisma.student.upsert({
-    where: { enrollmentNo: 'ENR-2025-001' },
+    where: { grNo: 'ENR-2025-001' },
     update: {},
     create: {
-      enrollmentNo: 'ENR-2025-001',
+      grNo: 'ENR-2025-001',
       firstName: 'Abizer Kasim',
       lastName: 'Kachwala',
       dateOfBirth: new Date('2015-01-01'),
       standard: 'V',
       division: 'A',
-      parentName: 'Kasim Kachwala',
-      contactNumber: '555-0104',
+      fatherName: 'Kasim Kachwala',
+      mobileNumber: '555-0104',
     },
   });
 

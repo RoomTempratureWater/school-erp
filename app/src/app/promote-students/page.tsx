@@ -58,7 +58,7 @@ export default async function PromoteStudentsPage(props: {
     studentWhere.OR = [
       { firstName: { contains: q, mode: "insensitive" } },
       { lastName: { contains: q, mode: "insensitive" } },
-      { enrollmentNo: { contains: q, mode: "insensitive" } },
+      { grNo: { contains: q, mode: "insensitive" } },
     ];
   }
 
@@ -67,7 +67,7 @@ export default async function PromoteStudentsPage(props: {
     include: {
       marks: latestExam ? { where: { examId: latestExam.id } } : false,
     },
-    orderBy: { enrollmentNo: "asc" },
+    orderBy: { grNo: "asc" },
   });
 
   // Calculate exam context for the table
@@ -88,7 +88,7 @@ export default async function PromoteStudentsPage(props: {
 
     return {
       id: s.id,
-      enrollmentNo: s.enrollmentNo,
+      grNo: s.grNo,
       firstName: s.firstName,
       lastName: s.lastName,
       standard: s.standard,

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 interface StudentResult {
   id: number;
-  enrollmentNo: string;
+  grNo: string;
   label: string;
   firstName: string;
   lastName: string;
@@ -13,9 +13,9 @@ interface StudentResult {
 }
 
 interface Props {
-  /** Name of the hidden input that holds enrollmentNo */
+  /** Name of the hidden input that holds grNo */
   name: string;
-  /** Default enrollment number (pre-selected) */
+  /** Default GR number (pre-selected) */
   defaultValue?: string;
   /** Default display label to show in input */
   defaultLabel?: string;
@@ -67,7 +67,7 @@ export default function StudentSearchDropdown({
   };
 
   const handleSelect = (student: StudentResult) => {
-    setSelected(student.enrollmentNo);
+    setSelected(student.grNo);
     setQuery(student.label);
     setOpen(false);
   };
@@ -127,7 +127,7 @@ export default function StudentSearchDropdown({
               key={s.id}
               onMouseDown={() => handleSelect(s)}
               className={`flex items-center gap-3 cursor-pointer px-3 py-2 text-sm transition-colors hover:bg-primary/5 ${
-                selected === s.enrollmentNo ? "bg-primary/10 font-medium" : ""
+                selected === s.grNo ? "bg-primary/10 font-medium" : ""
               }`}
             >
               <div className="size-7 rounded-full bg-slate-100 border flex items-center justify-center text-[10px] font-bold text-muted-foreground shrink-0">
@@ -135,7 +135,7 @@ export default function StudentSearchDropdown({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-medium truncate">{s.firstName} {s.lastName}</div>
-                <div className="text-[11px] text-muted-foreground">{s.enrollmentNo} · {s.standard} {s.division}</div>
+                <div className="text-[11px] text-muted-foreground">{s.grNo} · {s.standard} {s.division}</div>
               </div>
             </li>
           ))}
