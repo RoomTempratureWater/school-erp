@@ -58,6 +58,26 @@ export default function NewStaffPage() {
                   <label className="text-xs font-medium">Phone Number</label>
                   <Input name="phone" />
                 </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium">Date of Joining</label>
+                  <Input type="date" name="dateOfJoining" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium">Date of Leaving</label>
+                  <Input type="date" name="dateOfLeaving" />
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <label className="text-xs font-medium">Reason for Leaving</label>
+                  <Input name="reasonForLeaving" placeholder="If applicable..." />
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <label className="text-xs font-medium">Memos / Warnings</label>
+                  <Textarea
+                    name="memos"
+                    placeholder="Enter any initial memos or warnings..."
+                    rows={2}
+                  />
+                </div>
                 <div className="space-y-1 md:col-span-2">
                   <label className="text-xs font-medium">Address</label>
                   <Textarea name="address" rows={2} />

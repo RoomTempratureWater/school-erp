@@ -33,3 +33,19 @@ export async function updateStudent(formData: FormData) {
 export async function deleteDocument(docId: number) {
   await prisma.studentDocument.delete({ where: { id: docId } });
 }
+
+export async function updateGraceMarks(formData: FormData) {
+  const markId = parseInt(formData.get("markId") as string, 10);
+  const studentId = parseInt(formData.get("studentId") as string, 10);
+  const graceMarksStr = formData.get("graceMarks") as string;
+  const graceMarks = graceMarksStr ? parseFloat(graceMarksStr) : 0;
+
+  if (isNaN(markId) || isNaN(studentId)) return;
+
+  await prisma.mark.update({
+    where: { id: markId },
+    data: { graceMarks }
+  });
+
+  revalidatePath(`/students/${studentId}`);
+}

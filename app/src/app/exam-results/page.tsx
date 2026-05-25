@@ -189,9 +189,10 @@ export default async function ExamResultsPage(props: { searchParams: Promise<{ [
                      let hasFailedSubject = false;
                      
                      student.marks.forEach((m: any) => {
-                       totalObtained += m.marksObtained;
+                       const finalMarks = m.marksObtained + (m.graceMarks || 0);
+                       totalObtained += finalMarks;
                        totalMax += m.maxMarks;
-                       if (m.marksObtained < (m.maxMarks * PASS_THRESHOLD)) {
+                       if (finalMarks < (m.maxMarks * PASS_THRESHOLD)) {
                          hasFailedSubject = true;
                        }
                      });

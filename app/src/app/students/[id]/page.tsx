@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import ProfilePicUpload from "@/components/ProfilePicUpload";
 import DocumentUpload from "@/components/DocumentUpload";
-import { updateStudent } from "./actions";
+import { updateStudent, updateGraceMarks } from "./actions";
 import { ArrowRight } from "lucide-react";
 
 export default async function StudentProfilePage(props: {
@@ -514,7 +514,7 @@ export default async function StudentProfilePage(props: {
                       return acc;
                     }, {} as Record<number, { exam: any, marks: any[] }>)
                   ).map(({ exam, marks }) => {
-                    const totalObtained = marks.reduce((acc, m) => acc + m.marksObtained, 0);
+                    const totalObtained = marks.reduce((acc, m) => acc + m.marksObtained + (m.graceMarks || 0), 0);
                     const totalMax = marks.reduce((acc, m) => acc + m.maxMarks, 0);
                     const percentage = totalMax > 0 ? (totalObtained / totalMax) * 100 : 0;
 
@@ -531,18 +531,36 @@ export default async function StudentProfilePage(props: {
                           </div>
                         </div>
                         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                          {marks.map(m => (
-                            <div key={m.id} className="flex flex-col items-center justify-center px-3 py-2 bg-white border border-slate-200 rounded-lg min-w-[70px] shadow-sm">
+                          {marks.map(m => {
+                            const finalSubjectMarks = m.marksObtained + (m.graceMarks || 0);
+                            return (
+                            <div key={m.id} className="flex flex-col items-center justify-center px-3 py-2 bg-white border border-slate-200 rounded-lg min-w-[90px] shadow-sm relative group">
                               <span className="text-[9px] font-bold text-slate-400 uppercase truncate w-full text-center mb-1">{m.subject}</span>
-                              <span className="text-sm font-black text-slate-800">{m.marksObtained}</span>
+                              <div className="flex items-end gap-1">
+                                <span className="text-sm font-black text-slate-800">{m.marksObtained}</span>
+                                {m.graceMarks > 0 && <span className="text-[10px] text-emerald-600 font-bold mb-0.5">+{m.graceMarks}</span>}
+                              </div>
                               <div className="w-full bg-slate-100 h-1 mt-1.5 rounded-full overflow-hidden">
                                 <div 
-                                  className={`h-full ${m.marksObtained / m.maxMarks < 0.35 ? 'bg-red-400' : 'bg-emerald-400'}`} 
-                                  style={{ width: `${Math.min(100, (m.marksObtained / m.maxMarks) * 100)}%` }}
+                                  className={`h-full ${finalSubjectMarks / m.maxMarks < 0.35 ? 'bg-red-400' : 'bg-emerald-400'}`} 
+                                  style={{ width: `${Math.min(100, (finalSubjectMarks / m.maxMarks) * 100)}%` }}
                                 ></div>
                               </div>
+                              {editing && (
+                                <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-white border rounded shadow-md p-2 z-10 hidden group-hover:block w-[120px]">
+                                  <form action={updateGraceMarks} className="flex flex-col gap-1">
+                                    <input type="hidden" name="markId" value={m.id} />
+                                    <input type="hidden" name="studentId" value={student.id} />
+                                    <label className="text-[9px] font-bold text-slate-500 uppercase">Grace Marks</label>
+                                    <div className="flex gap-1">
+                                      <Input name="graceMarks" type="number" step="0.5" defaultValue={m.graceMarks || 0} className="h-6 text-xs px-1" />
+                                      <Button type="submit" size="sm" className="h-6 px-2 text-[10px]">Set</Button>
+                                    </div>
+                                  </form>
+                                </div>
+                              )}
                             </div>
-                          ))}
+                          )})}
                         </div>
                       </div>
                     );

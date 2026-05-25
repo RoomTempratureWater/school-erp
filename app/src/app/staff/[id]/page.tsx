@@ -142,6 +142,39 @@ export default async function StaffProfilePage(props: {
                       defaultValue={staff.phone ?? ""}
                     />
                   </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Date of Joining</label>
+                    <Input
+                      type="date"
+                      name="dateOfJoining"
+                      defaultValue={staff.dateOfJoining ? new Date(staff.dateOfJoining).toISOString().split('T')[0] : ""}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Date of Leaving</label>
+                    <Input
+                      type="date"
+                      name="dateOfLeaving"
+                      defaultValue={staff.dateOfLeaving ? new Date(staff.dateOfLeaving).toISOString().split('T')[0] : ""}
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="text-xs font-medium">Reason for Leaving</label>
+                    <Input
+                      name="reasonForLeaving"
+                      defaultValue={staff.reasonForLeaving ?? ""}
+                      placeholder="If applicable..."
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="text-xs font-medium">Memos / Warnings</label>
+                    <Textarea
+                      name="memos"
+                      defaultValue={staff.memos ? (staff.memos as any)[0]?.text : ""}
+                      placeholder="Enter any memos or warnings..."
+                      rows={2}
+                    />
+                  </div>
                   <div className="space-y-1 md:col-span-2">
                     <label className="text-xs font-medium">Address</label>
                     <Textarea
@@ -206,11 +239,35 @@ export default async function StaffProfilePage(props: {
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium">Date Joined</p>
+                <p className="text-sm font-medium">System Created On</p>
                 <p className="text-sm text-foreground font-medium mt-0.5">
                   {new Date(staff.createdAt).toLocaleDateString()}
                 </p>
               </div>
+              {staff.dateOfJoining && (
+                <div>
+                  <p className="text-sm font-medium text-blue-700">Date of Joining</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {new Date(staff.dateOfJoining).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+              {staff.dateOfLeaving && (
+                <div>
+                  <p className="text-sm font-medium text-red-700">Date of Leaving</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {new Date(staff.dateOfLeaving).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+              {staff.reasonForLeaving && (
+                <div>
+                  <p className="text-sm font-medium text-red-700">Reason for Leaving</p>
+                  <p className="text-sm text-foreground font-medium mt-0.5">
+                    {staff.reasonForLeaving}
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -246,6 +303,30 @@ export default async function StaffProfilePage(props: {
               <p className="text-sm text-foreground whitespace-pre-wrap">
                 {staff.achievements || "No achievements recorded yet."}
               </p>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm md:col-span-2 border-red-100">
+            <CardHeader className="pb-2 bg-red-50/50">
+              <CardTitle className="text-sm font-medium text-red-800">
+                Memos & Warnings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              {staff.memos ? (
+                <div className="space-y-3">
+                  {(staff.memos as any[]).map((memo, idx) => (
+                    <div key={idx} className="p-3 bg-red-50 border border-red-100 rounded-md">
+                      <p className="text-xs text-red-500 font-semibold mb-1">
+                        {new Date(memo.date).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm text-red-900 whitespace-pre-wrap">{memo.text}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">No memos or warnings.</p>
+              )}
             </CardContent>
           </Card>
         </div>

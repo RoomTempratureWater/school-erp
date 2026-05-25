@@ -11,6 +11,7 @@ export async function promoteStudents(
     fromDivision: string;
     toStandard: string;
     toDivision: string;
+    status: "PROMOTED" | "RE_EXAM" | "DETAINED";
   }>
 ) {
   try {
@@ -19,28 +20,39 @@ export async function promoteStudents(
 
     // 1. Perform promotions in transaction
     await prisma.$transaction(
-      promotions.map((p) => [
-        // Update Student
-        prisma.student.update({
-          where: { id: p.studentId },
-          data: {
-            standard: p.toStandard,
-            division: p.toDivision,
-          },
-        }),
+      promotions.map((p) => {
+        const queries: any[] = [];
+        
+        // Update Student if status is PROMOTED or if they are moved division
+        if (p.status === "PROMOTED" || p.fromDivision !== p.toDivision || p.fromStandard !== p.toStandard) {
+          queries.push(
+            prisma.student.update({
+              where: { id: p.studentId },
+              data: {
+                standard: p.status === "PROMOTED" ? p.toStandard : p.fromStandard,
+                division: p.toDivision,
+              },
+            })
+          );
+        }
+
         // Create Promotion Record
-        prisma.studentPromotion.create({
-          data: {
-            studentId: p.studentId,
-            academicYearId: targetYearId,
-            fromStandard: p.fromStandard,
-            fromDivision: p.fromDivision,
-            toStandard: p.toStandard,
-            toDivision: p.toDivision,
-            remarks: "Promoted via Mass Promotion",
-          },
-        }),
-      ]).flat()
+        queries.push(
+          prisma.studentPromotion.create({
+            data: {
+              studentId: p.studentId,
+              academicYearId: targetYearId,
+              fromStandard: p.fromStandard,
+              fromDivision: p.fromDivision,
+              toStandard: p.status === "PROMOTED" ? p.toStandard : p.fromStandard,
+              toDivision: p.toDivision,
+              status: p.status,
+              remarks: `Status: ${p.status}`,
+            },
+          })
+        );
+        return queries;
+      }).flat()
     );
 
     // 2. Fetch all standard-specific fee categories for the target year
@@ -55,8 +67,9 @@ export async function promoteStudents(
       const pendingFeesToCreate = [];
 
       for (const p of promotions) {
+        const targetStd = p.status === "PROMOTED" ? p.toStandard : p.fromStandard;
         // Find fees matching the student's new standard
-        const applicableFees = targetFees.filter(f => f.standard === p.toStandard);
+        const applicableFees = targetFees.filter(f => f.standard === targetStd);
         
         for (const fee of applicableFees) {
           pendingFeesToCreate.push({
@@ -65,7 +78,7 @@ export async function promoteStudents(
             amountDue: fee.amount,
             amountPaid: 0,
             status: "PENDING" as const,
-            studentStandard: p.toStandard,
+            studentStandard: targetStd,
             studentDivision: p.toDivision
           });
         }
