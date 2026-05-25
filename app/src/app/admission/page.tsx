@@ -56,7 +56,7 @@ export default async function AdmissionPage(props: { searchParams: Promise<{ [ke
                    <form action={addStudent} className="space-y-4">
                       <div className="space-y-1">
                          <label className="text-xs font-medium text-foreground">GR No.</label>
-                         <Input name="grNo" placeholder="E.g. ENR-2024-001" required />
+                         <Input name="grNo" placeholder="E.g. GR-2024-001" required />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                          <div className="space-y-1">
