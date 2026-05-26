@@ -324,3 +324,24 @@ model StudentPromotion {
 
   @@map("student_promotions")
 }
+
+// ==========================================
+// GENERAL RECEIPTS
+// ==========================================
+
+model GeneralReceipt {
+  id                Int           @id @default(autoincrement())
+  receiptNumber     String        @unique // Format: G-{ID}
+  title             String
+  amount            Float
+  receivedFromName  String
+  receivedFromPhone String?
+  receivedFromPan   String?
+  date              DateTime      @default(now())
+  paymentMethod     PaymentMethod @default(CASH)
+  paymentReference  String?       // Transaction ID, cheque number, etc.
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@map("general_receipts")
+}

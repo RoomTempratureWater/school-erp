@@ -89,9 +89,9 @@ export default async function ReportCardPrintPage(props: {
             SE
           </div>
           <div>
-            <h1 className="text-3xl font-bold uppercase tracking-wider text-slate-900">EduManage Academy</h1>
-            <p className="text-sm font-medium text-slate-600 mt-0.5">123 Education Lane, Knowledge Park, City - 400001</p>
-            <p className="text-sm font-medium text-slate-600">Tel: +91 9876543210 | Email: contact@edumanage.edu</p>
+            <h1 className="text-3xl font-bold uppercase tracking-wider text-slate-900">Epiphany School</h1>
+            <p className="text-sm font-medium text-slate-600 mt-0.5">5, Guruwar Peth, Panch Howd, Pune - 411042</p>
+            <p className="text-sm font-medium text-slate-600">Ph: 24467524 | Recognition No: 1497</p>
           </div>
         </div>
       </div>
