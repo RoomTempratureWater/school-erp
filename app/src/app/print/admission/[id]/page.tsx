@@ -21,7 +21,7 @@ export default async function PrintAdmissionReceipt(props: { params: Promise<{ i
          <div className="flex items-center gap-3">
              <div className="size-12 rounded-md bg-stone-900 text-white flex flex-col items-center justify-center font-bold text-xl print:bg-stone-900 print:text-white">E</div>
              <div>
-                <h1 className="text-2xl font-bold uppercase tracking-widest">EduManage</h1>
+                <h1 className="text-2xl font-bold uppercase tracking-widest">Epiphany School</h1>
                 <p className="text-sm text-stone-500 uppercase tracking-widest">Admission Receipt</p>
              </div>
          </div>
