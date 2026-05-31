@@ -10,11 +10,13 @@ export async function middleware(request: NextRequest) {
   const isAuthPage = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup');
 
   let isAuthenticated = false;
+  let userRole: string | undefined;
 
   if (token) {
     try {
-      await jwtVerify(token, encodedKey, { algorithms: ['HS256'] });
+      const { payload } = await jwtVerify(token, encodedKey, { algorithms: ['HS256'] });
       isAuthenticated = true;
+      userRole = payload.role as string;
     } catch (err) {
       isAuthenticated = false;
     }
@@ -27,6 +29,11 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   if (isAuthenticated && isAuthPage) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // RBAC: Management users cannot access school year setup
+  if (isAuthenticated && userRole === 'MANAGEMENT' && request.nextUrl.pathname.startsWith('/school-year-setup')) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 

@@ -56,6 +56,19 @@ export default function SignupPage() {
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-gray-700" htmlFor="role">Role</label>
+            <select
+              id="role"
+              name="role"
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white"
+            >
+              <option value="PRINCIPAL">Principal / Admin</option>
+              <option value="MANAGEMENT">Management User</option>
+            </select>
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-700" htmlFor="key">Signup Key</label>
             <input
               id="key"
