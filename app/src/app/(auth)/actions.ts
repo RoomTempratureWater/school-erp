@@ -10,8 +10,9 @@ export async function signup(formData: FormData) {
   const password = formData.get('password') as string;
   const retypePassword = formData.get('retypePassword') as string;
   const key = formData.get('key') as string;
+  const role = formData.get('role') as any; // Cast as any because Prisma Enum handles mapping
 
-  if (!userid || !password || !retypePassword || !key) {
+  if (!userid || !password || !retypePassword || !key || !role) {
     return { error: 'All fields are required.' };
   }
 
@@ -43,10 +44,11 @@ export async function signup(formData: FormData) {
       data: {
         userid,
         password: hashedPassword,
+        role,
       },
     });
 
-    await createSession(newUser.id, newUser.userid);
+    await createSession(newUser.id, newUser.userid, newUser.role);
   } catch (error) {
     console.error('Signup error:', error);
     return { error: 'An error occurred during signup.' };
@@ -77,7 +79,7 @@ export async function login(formData: FormData) {
       return { error: 'Invalid User ID or Password.' };
     }
 
-    await createSession(user.id, user.userid);
+    await createSession(user.id, user.userid, user.role);
   } catch (error) {
     console.error('Login error:', error);
     return { error: 'An error occurred during login.' };
